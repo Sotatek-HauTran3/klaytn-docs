@@ -25,40 +25,78 @@ def pubkey_rlp_encode_decode():
     print(to_pretty(decoded_pubkey_account_key))
 
 pubkey_rlp_encode_decode()
-
 ```
+
 ---
 ```zsh output
 ❯ py pubkey_rlp_encode_decode.py
-output
+02a1039b32426a3eaddb3ced5df63b596c8edceaa912846c4604017382d6646f0fd72e
+{
+  "type": 2,
+  "key": "0x039b32426a3eaddb3ced5df63b596c8edceaa912846c4604017382d6646f0fd72e"
+}
 ```
 </CH.Code>
 
 ---
-Import necessary utils from web3py, web3py_ext and web3
-
-```py pubkey_rlp_encode_decode.py focus=1:6
+Import **extend** from **web3py_ext** to extend web3 to klaytn web3
+```py pubkey_rlp_encode_decode.py focus=1
 
 ```
 ---
-Generate an Ethereum account from a private key
+Import necessary utils from **web3** and **web3py_ext**
+```py pubkey_rlp_encode_decode.py focus=2:6
+
+```
+---
+Generate an **EOA account** from a private key
 ```py pubkey_rlp_encode_decode.py focus=9
 
 ```
 ---
-Define a public key-based account key as a dictionary
+Define a **public account key**
 ```py pubkey_rlp_encode_decode.py focus=10:13
 
 ```
 ---
-Serialize the public key-based account key to RLP-encoded format
-```py pubkey_rlp_encode_decode.py focus=14:15
+**Key type 2**: public account key type
+```py pubkey_rlp_encode_decode.py focus=11
 
 ```
 ---
-Deserialize the RLP-encoded public key-based account key back into its original form, use **to_pretty** utils to get better formatted result
-```py pubkey_rlp_encode_decode.py focus=16:17
+And, has **key** field including **the public key** in a compressed format. You can use the **compressed_key** util from web3py-ext to extract the public key from the private key
+```py pubkey_rlp_encode_decode.py focus=4,12
 
 ```
+---
+**Serialize** the public account key to RLP-encoded format
+<CH.Code>
+```py pubkey_rlp_encode_decode.py focus=6,14:15
+
+```
+---
+
+```zsh output
+02a1039b32426a3eaddb3ced5df63b596c8edceaa912846c4604017382d6646f0fd72e
+```
+
+</CH.Code>
+
+---
+**Deserialize** the RLP-encoded public key-based account key back into its original form, use **to_pretty** utils to get better formatted result
+<CH.Code>
+```py pubkey_rlp_encode_decode.py focus=5,16:17
+
+```
+
+---
+
+```zsh output
+{
+  "type": 2,
+  "key": "0x039b32426a3eaddb3ced5df63b596c8edceaa912846c4604017382d6646f0fd72e"
+}
+```
+</CH.Code>
 
 </CH.Spotlight>
