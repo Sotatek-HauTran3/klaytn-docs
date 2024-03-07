@@ -36,7 +36,7 @@ def web3_account_update_role_based():
     account_update_tx = merge(account_update_tx, {
         'from' : to_checksum_address("0x5bd2fb3c21564c023a4a735935a2b7a238c4ccea"),
         'key' : {
-            "type": KeyType.MULTISIG,
+            "type": KeyType.ROLE_BASED,
             "keys": {
                 "roleTransactionKey": {
                     "type":KeyType.PUBLIC,
@@ -193,7 +193,7 @@ def web3_account_update_role_based():
     account_update_tx = merge(account_update_tx, {
         'from' : to_checksum_address("0x5bd2fb3c21564c023a4a735935a2b7a238c4ccea"),
         'key' : {
-            "type": KeyType.MULTISIG,
+            "type": KeyType.ROLE_BASED,
             "keys": {
                 "roleTransactionKey": {
                     "type":KeyType.PUBLIC,
