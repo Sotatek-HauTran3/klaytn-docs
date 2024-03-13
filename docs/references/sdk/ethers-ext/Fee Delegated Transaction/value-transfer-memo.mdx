@@ -46,7 +46,7 @@ async function main() {
 
 main();
 ```
-</CH.Code>
+
 ---
 ```zsh output
 ❯ node TxTypeFeeDelegatedValueTransferMemo.js
@@ -71,6 +71,7 @@ receipt {
   byzantium: true
 }
 ```
+</CH.Code>
 ---
 
 Importing necessary modules from external libraries
@@ -211,27 +212,7 @@ Sending the transaction as the fee payer
 
 ```zsh output
 ❯ node TxTypeFeeDelegatedValueTransferMemo.js
-sentTx {
-  hash: '0xfa2ae54df3314cdeb3c0fcf6ef970634a06e7d976d5a4e7146b03471e972f851',
-  type: 0,
-  accessList: null,
-  blockHash: null,
-  blockNumber: null,
-  transactionIndex: null,
-  confirmations: 0,
-  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
-  gasPrice: BigNumber { _hex: '0x0ba43b7400', _isBigNumber: true },
-  gasLimit: BigNumber { _hex: '0xcd14', _isBigNumber: true },
-  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
-  value: BigNumber { _hex: '0x2386f26fc10000', _isBigNumber: true },
-  nonce: 762,
-  data: '0x1234567890',
-  r: '0x55c20733cb08839d352e8ccbfd9f977ea8ba6cdf1dfad117931a5ca2a6e0b58a',
-  s: '0x6a777f842b4f23f4ad24309408c78b315f788bcca60826bd68083827f070ee49',
-  v: 2038,
-  creates: null,
-  chainId: 1001,
-}
+sentTx 0xac225ead53297c95b747abd84e7224ecbc1b40f459a532fd22a67143aa83b4ae
 ```
 
 </CH.Code>

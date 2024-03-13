@@ -33,7 +33,6 @@ async function main() {
 
 main();
 ```
-</CH.Code>
 ---
 ```zsh output
 ❯ node TxTypeValueTransferMemo.js
@@ -57,6 +56,7 @@ receipt {
   byzantium: true
 }
 ```
+</CH.Code>
 ---
 
 Import required packages like: ethers, klaytn wallet...
@@ -104,27 +104,7 @@ Send the transaction to blockchain
 
 ```zsh output
 ❯ node TxTypeValueTransferMemo.js
-sentTx {
-  hash: '0x2ab415b5e4c354d74cb40c8c2054f9ec139ac629f233674abd40cca5697d53b3',
-  type: 0,
-  accessList: null,
-  blockHash: '0xef816e6444ce19135dfc64803eea5beb9966804ca0869043e287129145ff41ee',
-  blockNumber: 143450915,
-  transactionIndex: 0,
-  confirmations: 6,
-  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
-  gasPrice: BigNumber { _hex: '0x0ba43b7400', _isBigNumber: true },
-  gasLimit: BigNumber { _hex: '0xcd14', _isBigNumber: true },
-  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
-  value: BigNumber { _hex: '0x2386f26fc10000', _isBigNumber: true },
-  nonce: 761,
-  data: '0x1234567890',
-  r: '0x0a280da3d8f04ad42400d6ea5d1628aefc71f8b878b138b3ae2ab048218255df',
-  s: '0x0ad53d6637f5e122cd117b72f97a10cbde4e8bbeee08aa853b91afc3fa6ae98d',
-  v: 2038,
-  creates: null,
-  chainId: 1001,
-}
+sentTx 0x57fdd7fec672b9e66e9bef766aca109babbfbb3c71b62544f10bd9bd3dceee85
 ```
 
 </CH.Code>
