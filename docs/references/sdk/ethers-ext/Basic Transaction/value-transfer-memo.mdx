@@ -6,29 +6,29 @@
 
 ``` js TxTypeValueTransferMemo.js
 const ethers = require("ethers");
-const { Wallet } = require("@klaytn/ethers-ext");
+const { Wallet, TxType, parseKlay } = require("@klaytn/ethers-ext");
 
-const recieverAddr = '0xc40b6909eb7085590e1c26cb3becc25368e249e9' 
-const senderAddr = '0xa2a8854b1802d8cd5de631e690817c253d6a9153' 
-const senderPriv = '0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8' 
+const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+
+const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
+const wallet = new Wallet(senderPriv, provider);
 
 async function main() {
-  const provider = new ethers.providers.JsonRpcProvider('https://public-en-baobab.klaytn.net')
-  const wallet = new Wallet(senderPriv, provider);
-
   const tx = {
-      type: 0x10,         
-      to: recieverAddr,
-      value: 1e12,
-      from: senderAddr,
-      input: "0x1234567890",
-    }; 
-  
-  const sentTx = await wallet.sendTransaction(tx);
-  console.log('sentTx', sentTx);
+    type: TxType.ValueTransferMemo,
+    from: senderAddr,
+    to: recieverAddr,
+    value: parseKlay("0.01"),
+    data: "0x1234567890",
+  };
 
-  const rc = await sentTx.wait();
-  console.log('receipt', rc);
+  const sentTx = await wallet.sendTransaction(tx);
+  console.log("sentTx", sentTx.hash);
+
+  const receipt = await sentTx.wait();
+  console.log("receipt", receipt);
 }
 
 main();
@@ -59,40 +59,72 @@ receipt {
 </CH.Code>
 ---
 
-Import required packages like: ethers, klaytn wallet...
+Import the **ethers** and **@klaytn/ethers-ext** packages to add klaytn features in ethers.js
 
 ```js TxTypeValueTransferMemo.js focus=1:2
 
 ```
 ---
-Define sender address, sender private key and reciever address
-```js TxTypeValueTransferMemo.js focus=3:6
+Define **sender address, sender private key and reciever address**
+```js TxTypeValueTransferMemo.js focus=4:6
 
 ```
 ---
 
-Setup the provider. A provider in ethers is a read-only abstraction to access the blockchain data.
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in ethers is a read-only abstraction to access the blockchain data.
 
-```js TxTypeValueTransferMemo.js focus=9:9
-
-```
----
-
-Declare your wallet.
-
-```js TxTypeValueTransferMemo.js focus=10:10
+```js TxTypeValueTransferMemo.js focus=8:8
 
 ```
 ---
 
-Declare transaction params: type, from, to ,value, input.
+Also, you can change the provider URL from **baobab** to **allthatnode**
+
+```js txTypeValueTransferTransaction.js focus=8:8
+const ethers = require("ethers");
+const { Wallet, TxType, parseKlay } = require("@klaytn/ethers-ext");
+
+const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+
+const provider = new ethers.providers.JsonRpcProvider('https://klaytn-mainnet-rpc.allthatnode.com:8551')
+const wallet = new Wallet(senderPriv, provider);
+
+async function main() {
+  const tx = {
+    type: TxType.ValueTransferMemo,
+    from: senderAddr,
+    to: recieverAddr,
+    value: parseKlay("0.01"),
+    data: "0x1234567890",
+  };
+
+  const sentTx = await wallet.sendTransaction(tx);
+  console.log("sentTx", sentTx.hash);
+
+  const receipt = await sentTx.wait();
+  console.log("receipt", receipt);
+}
+
+main();
+```
+---
+Declare sender's wallet from private key
+
+```js TxTypeValueTransferMemo.js focus=9
+
+```
+---
+
+Declare transaction with the fields such as **type, from, to, value, data**.  
 
 ```js TxTypeValueTransferMemo.js focus=12:18
 ```
 
 ---
 
-Send the transaction to blockchain
+Send the tx to the blockchain. Other fields that are not declared are filled automatically in **sendTransaction** function. It will return the tx hash, which will be used to wait the receipt
 
 <CH.Code>
 
@@ -103,15 +135,13 @@ Send the transaction to blockchain
 ---
 
 ```zsh output
-❯ node TxTypeValueTransferMemo.js
 sentTx 0x57fdd7fec672b9e66e9bef766aca109babbfbb3c71b62544f10bd9bd3dceee85
 ```
 
 </CH.Code>
-
 ---
 
-Wait for the transaction receipt.
+The **wait** function returns the tx receipt if the tx was sent to the blockchain successfully. 
 
 <CH.Code>
 
@@ -122,7 +152,6 @@ Wait for the transaction receipt.
 ---
 
 ```zsh output
-❯ node TxTypeValueTransferMemo.js
 receipt {
   to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
   from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
