@@ -5,36 +5,35 @@
 <CH.Code>
 
 ```js smartContractExecution.js
-const { Wallet, TxType } = require("@klaytn/ethers-ext");
 const ethers = require("ethers");
+const { Wallet, TxType } = require("@klaytn/ethers-ext");
 
 const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
 const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
-const contractAddr = "0xD7fA6634bDDe0B2A9d491388e2fdeD0fa25D2067";
+
+const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
+const wallet = new Wallet(senderPriv, provider);
+
+const contractAddr = "0x95Be48607498109030592C08aDC9577c7C2dD505";
+const abi = ["function setNumber(uint256 newNumber)"];
 
 async function main() {
-  const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
-  const wallet = new Wallet(senderPriv, provider);
+  const contract = new ethers.Contract(contractAddr, abi, provider);
+  const data = contract.interface.encodeFunctionData("setNumber", ["0x123"]);
 
-  const CONTRACT_ADDRESS = contractAddr;
-  const CONTRACT_ABI = ["function setNumber(uint256 newNumber) public", "function increment() public"];
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
-  const param = contract.interface.encodeFunctionData("setNumber", ["0x123"]);
-
-  let tx = {
+  const tx = {
     type: TxType.SmartContractExecution,
     from: senderAddr,
     to: contractAddr,
     value: 0,
-    input: param,
-    gasLimit: 100000,
+    data: data,
   };
 
   const sentTx = await wallet.sendTransaction(tx);
-  console.log("sentTx", sentTx);
+  console.log("sentTx", sentTx.hash);
 
-  const rc = await sentTx.wait();
-  console.log("receipt", rc);
+  const receipt = await sentTx.wait();
+  console.log("receipt", receipt);
 }
 
 main();
@@ -75,77 +74,73 @@ receipt {
 ```
 </CH.Code>
 ---
-Import necessary utils from ethers and ether-ext
+Import the **ethers** and **@klaytn/ethers-ext** modules to add Klaytn features on ethers.js.
 
 ```js smartContractExecution.js focus=1:2
 
 ```
 ---
-Define sender address and private key
+Define **sender address and sender private key**
+
 ```js smartContractExecution.js focus=4:5
 
 ```
 ---
-Define contract address
-```js smartContractExecution.js focus=6
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in ethers is a read-only abstraction to access the blockchain data.
 
-```
----
-Connect to the Baobab testnet
 
-```js smartContractExecution.js focus=9
+```js smartContractExecution.js focus=7
 
 ```
 ---
 
-Also, you can change the default provider. For example, using the alchemy provider.
+Also, you can change the provider URL from **baobab** to **allthatnode**
 
-```js smartContractExecution.js focus=9
-const { Wallet, TxType } = require("@klaytn/ethers-ext");
+```js smartContractExecution.js focus=7
 const ethers = require("ethers");
+const { Wallet, TxType } = require("@klaytn/ethers-ext");
 
 const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
 const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
-const contractAddr = "0xD7fA6634bDDe0B2A9d491388e2fdeD0fa25D2067";
+
+const provider = new ethers.providers.JsonRpcProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
+const wallet = new Wallet(senderPriv, provider);
+
+const contractAddr = "0x95Be48607498109030592C08aDC9577c7C2dD505";
+const abi = ["function setNumber(uint256 newNumber)"];
 
 async function main() {
-  const provider = new ethers.providers.JsonRpcProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
-  const wallet = new Wallet(senderPriv, provider);
+  const contract = new ethers.Contract(contractAddr, abi, provider);
+  const data = contract.interface.encodeFunctionData("setNumber", ["0x123"]);
 
-  const CONTRACT_ADDRESS = contractAddr;
-  const CONTRACT_ABI = ["function setNumber(uint256 newNumber) public", "function increment() public"];
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
-  const param = contract.interface.encodeFunctionData("setNumber", ["0x123"]);
-
-  let tx = {
+  const tx = {
     type: TxType.SmartContractExecution,
     from: senderAddr,
     to: contractAddr,
     value: 0,
-    input: param,
-    gasLimit: 100000,
+    data: data,
   };
 
   const sentTx = await wallet.sendTransaction(tx);
-  console.log("sentTx", sentTx);
+  console.log("sentTx", sentTx.hash);
 
-  const rc = await sentTx.wait();
-  console.log("receipt", rc);
+  const receipt = await sentTx.wait();
+  console.log("receipt", receipt);
 }
 
 main();
-
 ```
 ---
-Create a wallet with the sender's private key
+Create a sender's wallet using the sender's private key and the provider
 
-```js smartContractExecution.js focus=10
+```js smartContractExecution.js focus=8
 
 ```
----
-Define the contract address and ABI
 
-```js smartContractExecution.js focus=12:13
+---
+Set the **contract address** you want to execute into the to field and set **ABI**
+
+```js smartContractExecution.js focus=10:11
 
 ```
 ---
@@ -155,22 +150,22 @@ Create a contract instance
 
 ```
 ---
-Encode the function data for the "setNumber" function
+Encode the function name and parameter with the **encodeFunctionData** function
 
 ```js smartContractExecution.js focus=15
 
 ```
 ---
-Build the transaction object
+Declare a transaction object
 
 ```js smartContractExecution.js focus=17:24
 
 ```
 ---
-Send the transaction using the wallet
+Send the tx to the blockchain. Other fields that are not declared are filled automatically in **sendTransaction** function. It will return the tx hash, which will be used to wait the receipt
 
 <CH.Code>
-```js smartContractExecution.js focus=26:27
+```js smartContractExecution.js focus=25:26
 
 ```
 
@@ -178,23 +173,21 @@ Send the transaction using the wallet
 ---
 
 ```zsh output
-❯ node TxTypeFeeDelegatedValueTransfer.js
 sentTx 0xc0443ebef5f43edab8e76663d22bc7411720ec9b63af14301305718448881ee4
 ```
 
 </CH.Code>
 
 ---
-Wait for the transaction receipt
+The **wait** function returns the tx receipt if the tx was sent to the blockchain successfully. 
 
 <CH.Code>
-```js smartContractExecution.js focus=29:30
+```js smartContractExecution.js focus=28:29
 
 ```
 ---
 
 ```zsh output
-❯ node smartContractExecution.js
 receipt {
   to: '0x95Be48607498109030592C08aDC9577c7C2dD505',
   from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
