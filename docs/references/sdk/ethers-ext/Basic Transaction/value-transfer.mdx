@@ -134,13 +134,13 @@ async function main() {
 main();
 ```
 ---
-Create a sender's wallet from private key
+Create a sender's wallet with the private key and provider
 
 ```js txTypeValueTransferTransaction.js focus=9
 
 ```
 ---
-Declare transaction with the fields such as **type, from, to, value**.  
+Declare a transaction with the fields such as **type, from, to, value**.  
 
 ```js txTypeValueTransferTransaction.js focus=11:16
 
@@ -184,7 +184,7 @@ sentTx {
 </CH.Code>
 ---
 
-The **wait** function returns the tx receipt if the tx was sent to the blockchain successfully. 
+The **wait** function returns the tx receipt if it is completed in the blockchain. 
 
 <CH.Code>
 
