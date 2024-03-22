@@ -56,26 +56,26 @@ receipt {
 </CH.Code>
 
 ---
-Import necessary libraries and modules
+Import the **ethers** and **@klaytn/ethers-ext** packages to add klaytn features on ethers.js
 
 ```js TxCancelType.js focus=1:2
 
 ```
 ---
-Define sender addresses and private key
+Define **sender address and sender private key**
 
 ```js TxCancelType.js focus=4:5
 
 ```
 ---
-Create a provider using the Klaytn Baobab testnet JSON-RPC URL
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in ethers is a read-only abstraction to access the blockchain data.
 
 ```js TxCancelType.js focus=7
 
 ```
 ---
 
-Also, you can change the default provider. For example, using the alchemy provider.
+Also, you can change the provider URL from **baobab** to **allthatnode**
 
 ```js TxCancelType.js focus=7
 const ethers = require("ethers");
@@ -103,19 +103,19 @@ async function main() {
 main();
 ```
 ---
-Create a wallet using the sender's private key and the provider
+Create a sender's wallet with the private key and the provider
 
 ```js TxCancelType.js focus=8
 
 ```
 ---
-Send a **TxType.Cancel** transaction by sender address
+Declare a transaction with the **from** field as **sender address** and the **type** field as **TxType.Cancel**.
 
 ```js TxCancelType.js focus=11:14
 
 ```
 ---
-Send the transaction and log the result
+Send the tx to the blockchain. Other fields that are not declared are filled automatically in **sendTransaction** function. It will return the tx hash, which will be used to wait the receipt
 
 <CH.Code>
 ```js TxCancelType.js focus=16:17
@@ -126,14 +126,13 @@ Send the transaction and log the result
 ---
 
 ```zsh output
-❯ node TxCancelType.js
 sentTx 0x700631932d73747459fe941f7b9a4464a42dd40092d91668638b2e73a2a85f20
 ```
 
 </CH.Code>
 
 ---
-Wait for the transaction receipt
+The **wait** function returns the tx receipt if it is completed in the blockchain. 
 <CH.Code>
 
 ```js TxCancelType.js focus=19:20
@@ -144,7 +143,6 @@ Wait for the transaction receipt
 ---
 
 ```zsh output
-❯ node TxCancelType.js
 receipt {
   to: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
   from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
