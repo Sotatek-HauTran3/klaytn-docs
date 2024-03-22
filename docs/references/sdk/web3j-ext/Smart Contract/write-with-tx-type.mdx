@@ -34,10 +34,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class WriteContractWithKlaytnTxTypeExample {
-        /**
-         * @throws Exception
-         * 
-         */
         public static void run() throws Exception {
 
                 Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
@@ -118,53 +114,63 @@ number after : 50
 
 ```
 ---
-Import necessary utils from web3j
-```java WriteContractWithKlaytnTxTypeExample.java focus=3:8
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
+```java WriteContractWithKlaytnTxTypeExample.java focus=3:26
 
 ```
 ---
-Create a web3 connection using Baobab RPC endpoint and web3j
-```java WriteContractWithKlaytnTxTypeExample.java focus=17
+Connect to the Klaytn blockchain using Web3j and specify the URL
+```java WriteContractWithKlaytnTxTypeExample.java focus=31
 
 ```
 ---
-Create a wallet from a private key
-```java WriteContractWithKlaytnTxTypeExample.java focus=18
+Create KlayCredentials using the private key
+```java WriteContractWithKlaytnTxTypeExample.java focus=32
 
 ```
 ---
 Define smart contract address to interact with
-```java WriteContractWithKlaytnTxTypeExample.java focus=19
+```java WriteContractWithKlaytnTxTypeExample.java focus=33
 
 ```
 ---
 Define gas price and gas limit for contract transactions
-```java WriteContractWithKlaytnTxTypeExample.java focus=20:21
+```java WriteContractWithKlaytnTxTypeExample.java focus=34:35
+
+```
+---
+Define from and get chainId, nonce
+```java WriteContractWithKlaytnTxTypeExample.java focus=36:40
 
 ```
 ---
 Create a gas provider with static gas price and gas limit
-```java WriteContractWithKlaytnTxTypeExample.java focus=22
+```java WriteContractWithKlaytnTxTypeExample.java focus=42
 
 ```
 ---
 Load the contract using its address, Web3j instance, credentials, and gas provider
-```java WriteContractWithKlaytnTxTypeExample.java focus=23
+```java WriteContractWithKlaytnTxTypeExample.java focus=43
 
 ```
 ---
 Get the current number stored in the contract before writing
-```java WriteContractWithKlaytnTxTypeExample.java focus=25:26
+```java WriteContractWithKlaytnTxTypeExample.java focus=46
+
+```
+---
+Calculate payload by function name and definition
+```java WriteContractWithKlaytnTxTypeExample.java focus=48:53
 
 ```
 ---
 Increment the number stored in the contract by calling the increment function
-```java WriteContractWithKlaytnTxTypeExample.java focus=28:29
+```java WriteContractWithKlaytnTxTypeExample.java focus=55:70
 
 ```
 ---
 Get the updated number stored in the contract after writing
-```java WriteContractWithKlaytnTxTypeExample.java focus=31:32
+```java WriteContractWithKlaytnTxTypeExample.java focus=77
 
 ```
 

@@ -27,25 +27,25 @@ public class LegacyExample implements keySample {
         public static void run() throws IOException {
                 Web3j web3j = Web3j.build(new HttpService("https://public-en-baobab.klaytn.net"));
                 KlayCredentials klaycredentials = KlayCredentials.create("0x4a72b3d09c3d5e28e8652e0111f9c4ce252e8299aad95bb219a38eb0a3f4da49");
-                Credentials credentials = Credentials.create("0x4a72b3d09c3d5e28e8652e0111f9c4ce252e8299aad95bb219a38eb0a3f4da49");
+
                 BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
                 BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
-                String from = credentials.getAddress();
+                String from = klaycredentials.getAddress();
                 String to = "0x000000000000000000000000000000000000dead";
                 EthChainId EthchainId = web3j.ethChainId().send();
                 long chainId = EthchainId.getChainId().longValue();
                 BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
                                 .getTransactionCount();
                 BigInteger value = BigInteger.valueOf(100);
-                raw = KlayRawTransaction.createEtherTransaction(
+                RawTransaction raw = KlayRawTransaction.createEtherTransaction(
                                 nonce,
                                 GAS_PRICE,
                                 GAS_LIMIT,
                                 to,
                                 value);
-                signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, klaycredentials);
-                hexValue = Numeric.toHexString(signedMessage);
-                transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
+                byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, klaycredentials);
+                String hexValue = Numeric.toHexString(signedMessage);
+                EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
                 System.out.println("TxHash : \n " + transactionResponse.getResult());
                 String txHash = transactionResponse.getResult();
                 try {
@@ -72,7 +72,7 @@ public class LegacyExample implements keySample {
 
 ---
 
-Import the `web3j-ext` package and corresponding class that can interact with the Ethereum Blockchain and its ecosystem.
+Import the `web3j-ext` package and corresponding class that can interact with the Ethereum Blockchain and its ecosystem
 
 ```java txTypeLegacyTransaction.java focus=2:15
 
@@ -80,7 +80,7 @@ Import the `web3j-ext` package and corresponding class that can interact with th
 
 ---
 
-Setup the provider. A provider in ethers is a read-only abstraction to access the blockchain data.
+Connect to the Klaytn blockchain using Web3j and specify the URL
 
 ```java txTypeLegacyTransaction.java focus=19
 
@@ -88,7 +88,7 @@ Setup the provider. A provider in ethers is a read-only abstraction to access th
 
 ---
 
-Create KlayCredentials or Credentials in order to sign transaction.
+Create KlayCredentials using the private key
 
 ```java txTypeLegacyTransaction.java focus=20:21
 
