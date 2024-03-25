@@ -53,10 +53,11 @@ public class RecoverTransactionWithLegacyExample implements keySample {
                 from);
 
         byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials1);
-
         String hexValue = Numeric.toHexString(signedMessage);
+        EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
+        System.out.println("TxHash : \n " + transactionResponse.getResult());
+        
         String blockNumber = "latest";
-
         KlayRecoverFromTransactionResponse response = web3j.klayRecoverFromTransaction(hexValue, blockNumber).send();
         System.out.println("Original address : " + from);
         System.out.println("Result address : " + response.getResult());
@@ -119,18 +120,18 @@ Create a raw transaction and sign it using the sender's credentials
 
 ```
 ---
-Convert the signed message to hexadecimal format
-```java AccountKeyLegacy.java focus=49
+Sign and send the transaction with your credential
+```java AccountKeyLegacy.java focus=49:52
 
 ```
 ---
 Use Web3j to recover the sender's address from the transaction
-```java AccountKeyLegacy.java focus=51:56
+```java AccountKeyLegacy.java focus=54:57
 
 ```
 ---
 Shutdown the Web3j instance after completing the operation
-```java AccountKeyLegacy.java focus=58
+```java AccountKeyLegacy.java focus=59
 
 ```
 
