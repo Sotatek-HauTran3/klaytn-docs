@@ -88,23 +88,23 @@ receipt {
 
 ---
 
-Import ethers for blockchain interaction.
+Import the **ethers** and **@klaytn/ethers-ext** packages to add klaytn features on ethers.js
 
-```js TxTypeFeeDelegatedAccountUpdate.js focus=1
-
-```
----
-
-Import Klaytn utils: Wallet, txType, AccountKeyType.
-
-```js TxTypeFeeDelegatedAccountUpdate.js focus=3
+```js TxTypeFeeDelegatedAccountUpdate.js focus=1:3
 
 ```
 ---
 
-Declaring sender address and private keys
+Declaring **sender** , **fee payer** address and private keys. 
 
 ```js TxTypeFeeDelegatedAccountUpdate.js focus=7:11
+
+```
+---
+
+**senderNewPriv** is the private key to be updated
+
+```js TxTypeFeeDelegatedAccountUpdate.js focus=9
 
 ```
 ---

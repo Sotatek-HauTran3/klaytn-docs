@@ -74,26 +74,26 @@ receipt {
 </CH.Code>
 ---
 
-Importing necessary modules from external libraries
+Import the **ethers** and **@klaytn/ethers-ext** packages to add klaytn features on ethers.js
 
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=1:2
 
 ```
 ---
-Declaring variables for sender and fee payer addresses and private keys
+Define **sender address, sender private key, fee payer address, fee payer private key and reciever address**
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=4:8
 
 ```
 ---
 
-Creating a JSON-RPC provider instance with the specified URL
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in ethers is a read-only abstraction to access the blockchain data.
 
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=11
 
 ```
 ---
 
-Also, you can change the default provider. For example, using the alchemy provider.
+Also, you can change the provider URL from **baobab** to **allthatnode**
 
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=11
 const { Wallet, TxType, parseKlay } = require("@klaytn/ethers-ext");
@@ -135,7 +135,8 @@ main();
 ```
 ---
 
-Creating a wallet for the sender
+Create a sender's wallet from private key
+
 
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=12
 
@@ -143,19 +144,19 @@ Creating a wallet for the sender
 ---
 
 
-Creating a wallet for the fee payer
+Create fee payer's wallet from private key
 
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=13
 
 ```
 ---
-Creating a transaction object
+Declare transaction with the fields such as **type, from, to, value, input**.  
 
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=15:21
 ```
 
 ---
-Populating transaction with additional information
+Populating transaction with additional information using **senderWallet.populateTransaction**
 <CH.Code>
 
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=23:24
@@ -182,7 +183,7 @@ Populating transaction with additional information
 </CH.Code>
 
 ---
-Signing the transaction with the sender's private key
+Signing the transaction with the **sender's private key**
 
 <CH.Code>
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=26:27
@@ -200,7 +201,8 @@ senderTxHashRLP 0x11f88d8202fa850ba43b740082cd1494c40b6909eb7085590e1c26cb3becc2
 
 ---
 
-Sending the transaction as the fee payer
+Send the tx to the blockchain as **the fee payer**. Other fields that are not declared are filled automatically in **sendTransactionAsFeePayer** function. It will return the tx hash, which will be used to wait the receipt
+
 
 <CH.Code>
 
@@ -219,7 +221,8 @@ sentTx 0xac225ead53297c95b747abd84e7224ecbc1b40f459a532fd22a67143aa83b4ae
 
 ---
 
-Wait for the transaction receipt.
+The **wait** function returns the tx receipt if the tx was sent to the blockchain successfully. 
+
 
 <CH.Code>
 
