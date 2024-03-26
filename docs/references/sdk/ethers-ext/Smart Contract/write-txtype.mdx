@@ -107,23 +107,23 @@ number after 293
 
 
 ---
-Import necessary utils from ethers and @klaytn/ethers-ext
+Import the **ethers** and **@klaytn/ethers-ext** modules to add Klaytn features on ethers.js.
 ```js writeTxType.js focus=1:2
 
 ```
 ---
-Define sender address and private key
+Define **sender address** and **private key**
 ```js writeTxType.js focus=4:5
 
 ```
 ---
-Connect to web3 using RPC endpoint
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in ethers is a read-only abstraction to access the blockchain data.
 ```js writeTxType.js focus=7
 
 ```
 ---
 
-Also, you can change the default provider. For example, using the alchemy provider.
+Also, you can change the provider URL from **baobab** to **allthatnode**
 
 ```js writeTxType.js focus=7
 const ethers = require("ethers");
@@ -187,28 +187,29 @@ async function main() {
 main();
 ```
 ---
-create a wallet from sender private key and web3 provider
+create a wallet from sender **private key** and **web3 provider**
 ```js writeTxType.js focus=8
 
 ```
 
 ---
-Define contract Abi to interact with
+Set the **Abi** generated from solidity code
 ```js writeTxType.js focus=33
 
 ```
 ---
-Define contract address
+Define **contract address** to interact with
+
 ```js writeTxType.js focus=34
 
 ```
 ---
-Create a contract instance using pre-defined contract Abi and address
+Create a contract instance with **ethers.Contract**, fill in params **contractAddr**, **abi**, **provider**
 ```js writeTxType.js focus=37
 
 ```
 ---
-Get the **number** value before updated
+Get the **number** value before updated by using method **counter.number()**
 <CH.Code>
 ```js writeTxType.js focus=39
 
@@ -230,7 +231,7 @@ Create a transaction object with data from previous step with type **SmartContra
 
 ```
 ---
-Send the transaction to the network
+Send the tx to the blockchain. Other fields that are not declared are filled automatically in **sendTransaction** function. It will return the tx hash, which will be used to wait the receipt
 <CH.Code>
 ```js writeTxType.js focus=50:51
 
@@ -242,7 +243,7 @@ sentTx 0xcb9554737ebef23f181303f99b2a6f7ed942d00cd6cf9966f1dedcdf8720d306
 ```
 </CH.Code>
 ---
-Wait for the transaction and get the receipt
+The **wait** function returns the tx receipt if it is completed in the blockchain. 
 <CH.Code>
 ```js writeTxType.js focus=53:54
 
@@ -282,7 +283,7 @@ receipt {
 ```
 </CH.Code>
 ---
-Get the updated value **number**
+Get the updated value **number** by using method **counter.number()**
 <CH.Code>
 ```js writeTxType.js focus=56
 

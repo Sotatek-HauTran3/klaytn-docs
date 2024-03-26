@@ -117,23 +117,23 @@ number after 292
 
 
 ---
-Import necessary utils from ethers and @klaytn/ethers-ext
+Import the **ethers** and **@klaytn/ethers-ext** modules to add Klaytn features on ethers.js.
 ```js smartContractWrite.js focus=1:2
 
 ```
 ---
-Define sender address and private key
+Define **sender address** and **private key**
 ```js smartContractWrite.js focus=4:5
 
 ```
 ---
-Connect to web3 using RPC endpoint
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in ethers is a read-only abstraction to access the blockchain data.
 ```js smartContractWrite.js focus=7
 
 ```
 ---
 
-Also, you can change the default provider. For example, using the alchemy provider.
+Also, you can change the provider URL from **baobab** to **allthatnode**
 
 ```js smartContractWrite.js focus=7
 const ethers = require("ethers");
@@ -186,28 +186,28 @@ async function main() {
 main();
 ```
 ---
-create a wallet from sender private key and web3 provider
+create a wallet from sender **private key** and **web3 provider**
 ```js smartContractWrite.js focus=8
 
 ```
 
 ---
-Define contract Abi to interact with
+Set the **Abi** generated from solidity code
 ```js smartContractWrite.js focus=33
 
 ```
 ---
-Define contract address
+Define **contract address** to interact with
 ```js smartContractWrite.js focus=34
 
 ```
 ---
-Create a contract instance using pre-defined contract Abi and address
+Create a contract instance with **ethers.Contract**, fill in params **contractAddr**, **abi**, **provider**
 ```js smartContractWrite.js focus=37
 
 ```
 ---
-Get the **number** value before updated
+Get the **number** value before updated by using method **counter.number()**
 <CH.Code>
 ```js smartContractWrite.js focus=39
 
@@ -219,12 +219,12 @@ number before 293
 ```
 </CH.Code>
 ---
-Send a transaction to update the value using **increment** method of contract
+Create a transaction data to update the **number** value
 ```js smartContractWrite.js focus=41
 
 ```
 ---
-Wait for the transaction and get the receipt
+The **wait** function returns the tx receipt if it is completed in the blockchain. 
 <CH.Code>
 ```js smartContractWrite.js focus=42:43
 
@@ -284,7 +284,7 @@ receipt {
 ```
 </CH.Code>
 ---
-Get the updated value **number**
+Get the updated value **number** by using method **counter.number()**
 <CH.Code>
 ```js smartContractWrite.js focus=45
 

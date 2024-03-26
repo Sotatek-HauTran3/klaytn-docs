@@ -113,23 +113,23 @@ number after 294
 
 
 ---
-Import necessary utils from ethers and @klaytn/ethers-ext
+Import the **ethers** and **@klaytn/ethers-ext** modules to add Klaytn features on ethers.js.
 ```js writeWithFeeDelegation.js focus=1:2
 
 ```
 ---
-Define sender, fee payer address and private key
+Define **sender, fee payer address and sender private key**
 ```js writeWithFeeDelegation.js focus=4:7
 
 ```
 ---
-Connect to web3 using RPC endpoint
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in ethers is a read-only abstraction to access the blockchain data.
 ```js writeWithFeeDelegation.js focus=9
 
 ```
 ---
 
-Also, you can change the default provider. For example, using the alchemy provider.
+Also, you can change the provider URL from **baobab** to **allthatnode**
 
 ```js writeWithFeeDelegation.js focus=9
 const ethers = require("ethers");
@@ -200,28 +200,32 @@ async function main() {
 main();
 ```
 ---
-create two wallet from sender, fee payer private key and web3 provider
-```js writeWithFeeDelegation.js focus=10:11
+Create a sender's wallet using the sender's private key and the provider
+```js writeWithFeeDelegation.js focus=10
 
 ```
-
 ---
-Define contract Abi to interact with
+Create a fee payer's wallet using the sender's private key and the provider
+```js writeWithFeeDelegation.js focus=11
+
+```
+---
+Set the **Abi** generated from solidity code
 ```js writeWithFeeDelegation.js focus=36
 
 ```
 ---
-Define contract address
+Define **contract address** to interact with
 ```js writeWithFeeDelegation.js focus=37
 
 ```
 ---
-Create a contract instance using pre-defined contract Abi and address
+Create a contract instance with **ethers.Contract**, fill in params **contractAddr**, **abi**, **provider**
 ```js writeWithFeeDelegation.js focus=40
 
 ```
 ---
-Get the **number** value before updated
+Get the value of **number** from contract by using method **counter.number()**
 <CH.Code>
 ```js writeWithFeeDelegation.js focus=42
 
@@ -257,7 +261,7 @@ senderTxHashRLP 0x31f8843a850ba43b7400830111939495be48607498109030592c08adc9577c
 </CH.Code>
 
 ---
-Send the transaction to the network by fee payer wallet then wait for the receipt
+Send the tx to the blockchain by **fee payer's wallet**. Other fields that are not declared are filled automatically in **sendTransaction** function. It will return the tx hash, which will be used to wait the receipt
 <CH.Code>
 ```js writeWithFeeDelegation.js focus=58:61
 
@@ -298,7 +302,7 @@ receipt {
 </CH.Code>
 
 ---
-Get the updated value **number**
+Get the updated value **number** by using method **counter.number()**
 <CH.Code>
 ```js writeWithFeeDelegation.js focus=63
 

@@ -86,23 +86,23 @@ deployed address 0xb2F078a8Caed54322dDe974bf48fc11f04e6DdcD
 </CH.Code>
 
 ---
-Import necessary utils from ethers and @klaytn/ethers-ext
+Import the **ethers** and **@klaytn/ethers-ext** packages to add klaytn features on ethers.js
 ```js smartContractDeploy.js focus=1:2
 
 ```
 ---
-Define sender address and private key
+Define sender address, sender private key
 ```js smartContractDeploy.js focus=4:5
 
 ```
 ---
-Connect to web3 using RPC endpoint
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in ethers is a read-only abstraction to access the blockchain data.
 ```js smartContractDeploy.js focus=7
 
 ```
 ---
 
-Also, you can change the default provider. For example, using the alchemy provider.
+Also, you can change the provider URL from **baobab** to **allthatnode**
 
 ```js smartContractDeploy.js focus=7
 const ethers = require("ethers");
@@ -153,24 +153,25 @@ async function main() {
 main();
 ```
 ---
-create a wallet from sender private key and web3 provider
+Init Wallet instance with the private key and provider.
 ```js smartContractDeploy.js focus=8
 
 ```
 
 
 ---
-Define contract byte code to deploy
+Set the **compiled bytecode** from the solidity code you want to deploy to the blockchain network
 ```js smartContractDeploy.js focus=33
 
 ```
 ---
-Define contract ABI
+Set the **Abi** generated from solidity code
+
 ```js smartContractDeploy.js focus=34
 
 ```
 ---
-Create a contract factory which deploy a contract instance with defined Abi and byte code
+Create a contract factory which deploys a contract instance with the Abi and byte code
 ```js smartContractDeploy.js focus=37
 
 ```
@@ -181,7 +182,7 @@ Deploy the contract with initialize number value equal to 100
 ```
 
 ---
-Send the transaction and wait for the receipt
+Send the transaction to the blockchain and wait for the receipt
 <CH.Code>
 ```js smartContractDeploy.js focus=40:42
 
@@ -211,7 +212,7 @@ receipt {
 ```
 </CH.Code>
 ---
-Get the deployed address of new contract
+Get the address of the new contract
 <CH.Code>
 ```js smartContractDeploy.js focus=43
 
