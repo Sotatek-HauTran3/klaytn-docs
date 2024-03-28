@@ -62,50 +62,44 @@ receipt {
 </CH.Code>
 
 
-
-
-
-
 ---
 
-Import necessary classes from the Klaytn Web3 library
+Import the **web3** and **@klaytn/web3js-ext** packages to add klaytn features on web3
 
 
-```js SmartContractDeploy.js focus=1
+```js SmartContractDeploy.js focus=1:2
 
 ```
 ---
 
-Import the standard Web3 library for provider creation
-
-
-```js SmartContractDeploy.js focus=2
-
-```
----
-
-Define sender address and private key
+Define **sender address and sender private key**
 
 ```js SmartContractDeploy.js focus=4:5
 
 ```
 ---
-Smart contract bytecode to deploy
+Smart contract **bytecode** to deploy, you can retreive it from compiled solidity code
 
 ```js SmartContractDeploy.js focus=6
 
 ```
 ---
 
-Create a Web3 provider with the specified Klaytn endpoint
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in web3j is a read-only abstraction to access the blockchain data.
 
 
 ```js SmartContractDeploy.js focus=9
 
 ```
 ---
+Also, you can change the provider URL from **baobab** to **allthatnode**
 
-Create a KlaytnWeb3 instance using the provider
+```js SmartContractDeploy.js focus=9
+
+```
+---
+
+Create a **KlaytnWeb3** instance using the provider
 
 
 ```js SmartContractDeploy.js focus=10
@@ -113,7 +107,7 @@ Create a KlaytnWeb3 instance using the provider
 ```
 ---
 
-Convert the sender's private key to an account object
+Convert the sender's private key to an account using **web3.eth.accounts.privateKeyToAccount**
 
 
 ```js SmartContractDeploy.js focus=11
@@ -121,14 +115,30 @@ Convert the sender's private key to an account object
 ```
 ---
 
-Define the smart contract deployment transaction
-
-
+Define a transaction object for the Cancel transaction
 ```js SmartContractDeploy.js focus=13:19
 
 ```
 ---
-Sign the transaction with the sender's account
+
+Set `type: TxType.SmartContractDeploy` for the transaction type of deploying contract
+```js SmartContractDeploy.js focus=14
+
+```
+---
+
+Set `data: bytecode` or `input: bytecode` for the source of the contract
+```js SmartContractDeploy.js focus=16
+
+```
+---
+
+Set params **from, humanReadable, codeFormat** as value in example
+```js SmartContractDeploy.js focus=15,17,18
+
+```
+---
+Sign the transaction with the **sender**'s account
 
 
 
@@ -136,7 +146,7 @@ Sign the transaction with the sender's account
 
 ```
 ---
-Send the signed transaction to the Klaytn network
+Send the signed transaction to the Klaytn network. It will return the transaction receipt
 
 
 ```js SmartContractDeploy.js focus=24:25

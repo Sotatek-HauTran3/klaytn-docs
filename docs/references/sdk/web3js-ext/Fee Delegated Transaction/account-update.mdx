@@ -4,8 +4,7 @@
 <CH.Code>
 
 ```js TxTypeFeeDelegatedAccountUpdate.js
-const { KlaytnWeb3, TxType, AccountKeyType, parseTransaction, getPublicKeyFromPrivate } = require("@klaytn/web3js-ext");
-const { Web3 } = require("web3");
+const { Web3, TxType, AccountKeyType, getPublicKeyFromPrivate } = require("@klaytn/web3js-ext");
 
 // Using senderPriv == senderNewPriv to execute this example repeatedly.
 // But you might want to register a different private key.
@@ -15,43 +14,37 @@ const senderNewPriv = "0xf8cc7c3813ad23817466b1802ee805ee417001fcce9376ab8728c92
 const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
 const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
 
-async function main() {
-  const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
-  const web3 = new KlaytnWeb3(provider);
-  const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+const web3 = new Web3(provider);
+const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
 
+async function main() {
   const publicKey = getPublicKeyFromPrivate(senderNewPriv);
   console.log({ publicKey });
 
-  let tx = {
-    type: TxType.FeeDelegatedAccountUpdateWithRatio,
+  const tx = {
+    type: TxType.FeeDelegatedAccountUpdate,
     from: senderAddr,
     key: {
       type: AccountKeyType.Public,
       key: publicKey
     },
-    gasLimit: 100_000,
-    feeRatio: 30,
   };
 
+  // Sign transaction by sender
   const signResult1 = await senderAccount.signTransaction(tx);
-  console.log("senderRawTx", signResult1.rawTransaction);
-  console.log("senderTx", parseTransaction(signResult1.rawTransaction));
+  console.log("senderTxHashRLP", signResult1.rawTransaction);
 
-// Next step is usually done in the backend by the service provider.
-// But for the sake of demonstration, feePayer signature is done here.
-
-  const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
+  // Sign and send transaction by fee payer
   const signResult2 = await feePayerAccount.signTransactionAsFeePayer(signResult1.rawTransaction);
-  console.log("rawTx", signResult2.rawTransaction);
-  console.log("tx", parseTransaction(signResult2.rawTransaction));
+  console.log("signedTx", signResult2.transactionHash);
 
   const receipt = await web3.eth.sendSignedTransaction(signResult2.rawTransaction);
   console.log("receipt", receipt);
 }
 
 main();
-
 ```
 
 ---
@@ -83,7 +76,7 @@ receipt {
 
 
 ---
-Importing necessary modules from the Klaytn Web3.
+Import the **web3** and **@klaytn/web3js-ext** packages to add klaytn features on web3
 
 
 ```js TxTypeFeeDelegatedAccountUpdate.js focus=1
@@ -92,36 +85,30 @@ Importing necessary modules from the Klaytn Web3.
 
 ---
 
-Importing the Web3 module from the standard Ethereum Web3 library
+Define **sender address**, **sender private key** and **new private key** to be changed
 
-```js TxTypeFeeDelegatedAccountUpdate.js focus=2
-
-```
-
-
-
----
-
-Declaring constant variables for sender, fee payer addresses, and private keys
-
-```js TxTypeFeeDelegatedAccountUpdate.js focus=6:10
-
-```
----
-Creating a provider instance with the specified URL
-
-
-
-```js TxTypeFeeDelegatedAccountUpdate.js focus=13:14
+```js TxTypeFeeDelegatedAccountUpdate.js focus=5:7
 
 ```
 ---
 
-Also, you can change the default provider. For example, using the alchemy provider.
+Define **fee payer address** and **private key**
 
-```js TxTypeFeeDelegatedAccountUpdate.js focus=13
-const { KlaytnWeb3, TxType, AccountKeyType, parseTransaction, getPublicKeyFromPrivate } = require("@klaytn/web3js-ext");
-const { Web3 } = require("web3");
+```js TxTypeFeeDelegatedAccountUpdate.js focus=8:9
+
+```
+---
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in web3 is a read-only abstraction to access the blockchain data.
+
+```js TxTypeFeeDelegatedAccountUpdate.js focus=11:12
+
+```
+---
+
+Also, you can change the provider URL from **baobab** to **allthatnode**
+
+```js TxTypeFeeDelegatedAccountUpdate.js focus=11
+const { Web3, TxType, AccountKeyType, getPublicKeyFromPrivate } = require("@klaytn/web3js-ext");
 
 // Using senderPriv == senderNewPriv to execute this example repeatedly.
 // But you might want to register a different private key.
@@ -131,49 +118,60 @@ const senderNewPriv = "0xf8cc7c3813ad23817466b1802ee805ee417001fcce9376ab8728c92
 const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
 const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
 
-async function main() {
-  const provider = new Web3.providers.HttpProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551t");
-  const web3 = new KlaytnWeb3(provider);
-  const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+const provider = new Web3.providers.HttpProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
+const web3 = new Web3(provider);
+const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
 
+async function main() {
   const publicKey = getPublicKeyFromPrivate(senderNewPriv);
   console.log({ publicKey });
 
-  let tx = {
-    type: TxType.FeeDelegatedAccountUpdateWithRatio,
+  const tx = {
+    type: TxType.FeeDelegatedAccountUpdate,
     from: senderAddr,
     key: {
       type: AccountKeyType.Public,
       key: publicKey
     },
-    gasLimit: 100_000,
-    feeRatio: 30,
   };
 
+  // Sign transaction by sender
   const signResult1 = await senderAccount.signTransaction(tx);
-  console.log("senderRawTx", signResult1.rawTransaction);
-  console.log("senderTx", parseTransaction(signResult1.rawTransaction));
+  console.log("senderTxHashRLP", signResult1.rawTransaction);
 
-// Next step is usually done in the backend by the service provider.
-// But for the sake of demonstration, feePayer signature is done here.
-
-  const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
+  // Sign and send transaction by fee payer
   const signResult2 = await feePayerAccount.signTransactionAsFeePayer(signResult1.rawTransaction);
-  console.log("rawTx", signResult2.rawTransaction);
-  console.log("tx", parseTransaction(signResult2.rawTransaction));
+  console.log("signedTx", signResult2.transactionHash);
 
   const receipt = await web3.eth.sendSignedTransaction(signResult2.rawTransaction);
   console.log("receipt", receipt);
 }
 
 main();
-output
+
     
 
 ```
 ---
 
-Declare sender account from private keys.
+Create a **sender wallet** with the private key using `web3.eth.accounts.privateKeyToAccount`
+
+
+```js TxTypeFeeDelegatedAccountUpdate.js focus=13
+
+```
+---
+
+Create a **fee payer wallet** with the private key using `web3.eth.accounts.privateKeyToAccount`
+
+
+```js TxTypeFeeDelegatedAccountUpdate.js focus=14
+
+```
+---
+
+Generating the **public key** from the **new private key** using `getPublicKeyFromPrivate`
 
 
 ```js TxTypeFeeDelegatedAccountUpdate.js focus=17:18
@@ -181,15 +179,7 @@ Declare sender account from private keys.
 ```
 ---
 
-Generating the public key from the new private key
-
-
-```js TxTypeFeeDelegatedAccountUpdate.js focus=17:18
-
-```
----
-
-Creating a transaction object for fee-delegated account update with ratio
+Creating a transaction object with `type: TxType.FeeDelegatedAccountUpdate` and `key` contains new public key
 
 
 ```js TxTypeFeeDelegatedAccountUpdate.js focus=20:29
@@ -197,25 +187,24 @@ Creating a transaction object for fee-delegated account update with ratio
 ```
 ---
 
-Signing the transaction with the sender's private key
+Sign the transaction with the **sender** account
 
 
-```js TxTypeFeeDelegatedAccountUpdate.js focus=31:33
-
-```
----
-Fee payer signature (usually done in the backend by the service provider)
-
-
-
-```js TxTypeFeeDelegatedAccountUpdate.js focus=38:41
+```js TxTypeFeeDelegatedAccountUpdate.js focus=29:31
 
 ```
 ---
+Use **fee payer** account to sign the transaction with `signTransactionAsFeePayer`
 
-Sending the signed transaction with the fee payer's signature
 
-```js TxTypeFeeDelegatedAccountUpdate.js focus=43:44
+```js TxTypeFeeDelegatedAccountUpdate.js focus=33:35
+
+```
+---
+
+Send the signed transaction to blockchain with `web3.eth.sendSignedTransaction`. It will return the transaction receipt
+
+```js TxTypeFeeDelegatedAccountUpdate.js focus=37:38
 
 ```
 

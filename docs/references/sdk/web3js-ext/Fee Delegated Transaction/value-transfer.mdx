@@ -8,39 +8,33 @@ TxTypeValueTransfer is used when a user wants to send KLAY.
 <CH.Code>
 
 ```js TxTypeFeeDelegatedValueTransfer.js
-const { KlaytnWeb3, TxType, toPeb, parseTransaction } = require("@klaytn/web3js-ext");
-const { Web3 } = require("web3");
+const { Web3, TxType, toPeb } = require("@klaytn/web3js-ext");
 
 const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
 const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
-const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
 const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
 const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
 
-async function main() {
-  const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
-  const web3 = new KlaytnWeb3(provider);
-  const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+const web3 = new Web3(provider);
+const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
 
+async function main() {
   const tx = {
     type: TxType.FeeDelegatedValueTransfer,
     from: senderAddr,
     to: recieverAddr,
     value: toPeb("0.01"),
-    gasLimit: 50000,
   };
 
+  // Sign transaction by sender
   const signResult1 = await senderAccount.signTransaction(tx);
-  console.log("senderRawTx", signResult1.rawTransaction);
-  console.log("senderTx", parseTransaction(signResult1.rawTransaction));
+  console.log("senderTxHashRLP", signResult1.rawTransaction);
 
-  // Next step is usually done in the backend by the service provider.
-  // But for the sake of demonstration, feePayer signature is done here.
-
-  const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
+  // Sign and send transaction by fee payer
   const signResult2 = await feePayerAccount.signTransactionAsFeePayer(signResult1.rawTransaction);
-  console.log("rawTx", signResult2.rawTransaction);
-  console.log("tx", parseTransaction(signResult2.rawTransaction));
+  console.log("signedTx", signResult2.transactionHash);
 
   const receipt = await web3.eth.sendSignedTransaction(signResult2.rawTransaction);
   console.log("receipt", receipt);
@@ -78,182 +72,146 @@ receipt {
 </CH.Code>
 
 
-
-
-
-
 ---
 
-Import necessary modules from the '@klaytn/web3js-ext' and 'web3' packages
+Import the **web3** and **@klaytn/web3js-ext** packages to add klaytn features on web3
 
-```js TxTypeFeeDelegatedValueTransfer.js focus=1:2
+```js TxTypeFeeDelegatedValueTransfer.js focus=1
+
+```
+
+---
+Define **sender**, **fee payer** addresses and private keys
+
+```js TxTypeFeeDelegatedValueTransfer.js focus=3:6
 
 ```
 ---
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in web3 is a read-only abstraction to access the blockchain data.
 
- Define Ethereum and Klaytn addresses and private keys
-
-```js TxTypeFeeDelegatedValueTransfer.js focus=4:8
-
-```
----
-
- Create a provider using the Baobab testnet URL
-
-```js TxTypeFeeDelegatedValueTransfer.js focus=11:12
+```js TxTypeFeeDelegatedValueTransfer.js focus=8:9
 
 ```
+
 ---
+Also, you can change the provider URL from **baobab** to **allthatnode**
 
-Also, you can change the default provider. For example, using the alchemy provider.
-
-```js TxTypeFeeDelegatedValueTransfer.js focus=11:12
-const { KlaytnWeb3, TxType, toPeb, parseTransaction } = require("@klaytn/web3js-ext");
-const { Web3 } = require("web3");
+```js TxTypeFeeDelegatedValueTransfer.js focus=8
+const { Web3, TxType, toPeb } = require("@klaytn/web3js-ext");
 
 const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
 const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
-const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
 const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
 const recieverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
 
-async function main() {
-  const provider = new Web3.providers.HttpProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
-  const web3 = new KlaytnWeb3(provider);
-  const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+const provider = new Web3.providers.HttpProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551"");
+const web3 = new Web3(provider);
+const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
 
+async function main() {
   const tx = {
     type: TxType.FeeDelegatedValueTransfer,
     from: senderAddr,
     to: recieverAddr,
     value: toPeb("0.01"),
-    gasLimit: 50000,
   };
 
+  // Sign transaction by sender
   const signResult1 = await senderAccount.signTransaction(tx);
-  console.log("senderRawTx", signResult1.rawTransaction);
-  console.log("senderTx", parseTransaction(signResult1.rawTransaction));
+  console.log("senderTxHashRLP", signResult1.rawTransaction);
 
-  // Next step is usually done in the backend by the service provider.
-  // But for the sake of demonstration, feePayer signature is done here.
-
-  const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
+  // Sign and send transaction by fee payer
   const signResult2 = await feePayerAccount.signTransactionAsFeePayer(signResult1.rawTransaction);
-  console.log("rawTx", signResult2.rawTransaction);
-  console.log("tx", parseTransaction(signResult2.rawTransaction));
+  console.log("signedTx", signResult2.transactionHash);
 
   const receipt = await web3.eth.sendSignedTransaction(signResult2.rawTransaction);
   console.log("receipt", receipt);
 }
 
 main();
-```
----
-
- Convert the sender's private key to an account
-
-```js TxTypeFeeDelegatedValueTransfer.js focus=13
 
 ```
 ---
+Create a **sender wallet** with the private key using `web3.eth.accounts.privateKeyToAccount`
 
- Define a transaction object with the transfer details
-```js TxTypeFeeDelegatedValueTransfer.js focus=15:21
+```js TxTypeFeeDelegatedValueTransfer.js focus=10
+
+```
+---
+Create a **fee payer wallet** with the private key using `web3.eth.accounts.privateKeyToAccount`
+
+```js TxTypeFeeDelegatedValueTransfer.js focus=11
 
 ```
 ---
 
- Sign the transaction using the sender's account
+Define the transaction object.
+```js TxTypeFeeDelegatedValueTransfer.js focus=14:20
+
+```
+---
+
+Set `type: TxType.FeeDelegatedValueTransfer` for transaction to send a value transfer with a fee payer
+```js TxTypeFeeDelegatedValueTransfer.js focus=15
+
+```
+---
+
+Set `value: toPeb("0.01")` to define the value to be transfered, use `toPeb` to convert Klay to Peb
+```js TxTypeFeeDelegatedValueTransfer.js focus=18
+
+```
+---
+
+Set others params like **from**, **to**
+```js TxTypeFeeDelegatedValueTransfer.js focus=16:17
+
+```
+---
+
+Sign the transaction with **sender** account using `signTransaction`
 <CH.Code>
-
-```js TxTypeFeeDelegatedValueTransfer.js focus=23:25
+```js TxTypeFeeDelegatedValueTransfer.js focus=21:23
 
 ```
-
-
 ---
 
 ```zsh output
 ❯ node TxTypeFeeDelegatedValueTransfer.js
-senderRawTx 0x09f8878202fc850ba43b740082c35094c40b6909eb7085590e1c26cb3becc25368e249e9872386f26fc1000094a2a8854b1802d8cd5de631e690817c253d6a9153f847f8458207f5a01f3ba9ffba68d799f95aba79a28820aa35860115190ad4a8d2241ece85c9c9bca00d3d2308d3b600e2040f313196a83ddc352efd14a6a0989af07dae6cfc9eb34c
-senderTx {
-  type: '0x09',
-  nonce: '0x02fc',
-  gasPrice: '0x0ba43b7400',
-  gasLimit: '0xc350',
-  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
-  value: '0x2386f26fc10000',
-  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
-  txSignatures: [
-    [
-      '0x07f5',
-      '0x1f3ba9ffba68d799f95aba79a28820aa35860115190ad4a8d2241ece85c9c9bc',
-      '0x0d3d2308d3b600e2040f313196a83ddc352efd14a6a0989af07dae6cfc9eb34c'
-    ]
-  ]
-}
+senderTxHashRLP 0x11f88d8203b7850ba43b740082d1f694c40b6909eb7085590e1c26cb3becc25368e249e9872386f26fc1000094a2a8854b1802d8cd5de631e690817c253d6a9153851234567890f847f8458207f5a0fbd13725c0e913f564469d43e6e928514caca92ca5d5fcc18c493445d2bd3f00a065980c9c0ea0bcfa4324c23b21d45acaa8a64d1d47d45a6730774756be794e86
 ```
 
 </CH.Code>
 ---
-
-Sign the transaction with fee payer's account.
+Sign the transaction with **fee payer** account using `signTransactionAsFeePayer`
 
 <CH.Code>
-```js TxTypeFeeDelegatedValueTransfer.js focus=30:33
+```js TxTypeFeeDelegatedValueTransfer.js focus=25:27
 
 ```
-
-
 ---
 
 ```zsh output
 ❯ node TxTypeFeeDelegatedValueTransfer.js
-rawTx 0x09f8e58202fc850ba43b740082c35094c40b6909eb7085590e1c26cb3becc25368e249e9872386f26fc1000094a2a8854b1802d8cd5de631e690817c253d6a9153f847f8458207f5a01f3ba9ffba68d799f95aba79a28820aa35860115190ad4a8d2241ece85c9c9bca00d3d2308d3b600e2040f313196a83ddc352efd14a6a0989af07dae6cfc9eb34c94cb0eb737dfda52756495a5e08a9b37aab3b271daf847f8458207f6a0db464236f880ff7a0ac8d19caadea6f0495a1a7903ef0c362f858721f389e656a029b4ca7c153da160702e75b0a4051ab84ac2b9c536692a1063df52149a0c732d
-tx {
-  type: '0x09',
-  nonce: '0x02fc',
-  gasPrice: '0x0ba43b7400',
-  gasLimit: '0xc350',
-  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
-  value: '0x2386f26fc10000',
-  from: '0xA2a8854b1802D8Cd5De631E690817c253d6a9153',
-  txSignatures: [
-    [
-      '0x07f5',
-      '0x1f3ba9ffba68d799f95aba79a28820aa35860115190ad4a8d2241ece85c9c9bc',
-      '0x0d3d2308d3b600e2040f313196a83ddc352efd14a6a0989af07dae6cfc9eb34c'
-    ]
-  ],
-  feePayer: '0xCb0eb737dfda52756495A5e08A9b37AAB3b271dA',
-  feePayerSignatures: [
-    [
-      '0x07f6',
-      '0xdb464236f880ff7a0ac8d19caadea6f0495a1a7903ef0c362f858721f389e656',
-      '0x29b4ca7c153da160702e75b0a4051ab84ac2b9c536692a1063df52149a0c732d'
-    ]
-  ]
-}
+signedTx 0xded94a15a62b6d24ac4d0a317f0ed37873d4105b0ff7500e577f6d282fdc4bae
 ```
 
 </CH.Code>
 ---
-Send the signed transaction to the network and get the receipt
-
+Send the transaction to blockchain. It will return the transaction receipt
 <CH.Code>
-
-```js TxTypeFeeDelegatedValueTransfer.js focus=35:36
+```js TxTypeFeeDelegatedValueTransfer.js focus=29:30
 
 ```
-
 ---
 
 ```zsh output
 ❯ node TxTypeFeeDelegatedValueTransfer.js
 receipt {
-  blockHash: '0x9cd046da67fe4b422533443687b0223fd0e9c0ddb575ad3b9f5e018022017e41',
-  blockNumber: 143464955n,
-  cumulativeGasUsed: 364363n,
+  blockHash: '0x442774c57650ef18338bea13ad069428acf8a6c8da5e7eb104dd1d961972400a',
+  blockNumber: 148744776n,
+  cumulativeGasUsed: 177286n,
   effectiveGasPrice: 25000000000n,
   from: '0xa2a8854b1802d8cd5de631e690817c253d6a9153',
   gasUsed: 31000n,
@@ -261,8 +219,8 @@ receipt {
   logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
   status: 1n,
   to: '0xc40b6909eb7085590e1c26cb3becc25368e249e9',
-  transactionHash: '0x5a445950d65a5c82d7ea22eaa4089d46a54bd814c4c801dffeeea727bfb149d9',
-  transactionIndex: 2n,
+  transactionHash: '0xded94a15a62b6d24ac4d0a317f0ed37873d4105b0ff7500e577f6d282fdc4bae',
+  transactionIndex: 1n,
   type: 0n
 }
 ```

@@ -59,49 +59,55 @@ receipt {
 </CH.Code>
 
 ---
-Import necessary libraries and modules
+Import the **web3** and **@klaytn/web3js-ext** packages to add klaytn features on web3
 
 ```js TxCancelType.js focus=1:2
 
 ```
 ---
-Define sender address and private key
+Define **sender address and sender private key**
 
 ```js TxCancelType.js focus=4:5
 
 ```
 ---
-Create a provider using the Klaytn Baobab testnet HTTP URL
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in web3j is a read-only abstraction to access the blockchain data.
 
 ```js TxCancelType.js focus=8
 
 ```
 ---
-Create a KlaytnWeb3 instance using the provider
+Also, you can change the provider URL from **baobab** to **allthatnode**
+
+```js TxCancelType.js focus=8
+
+```
+---
+Create a **KlaytnWeb3** instance using the provider
 
 ```js TxCancelType.js focus=9
 
 ```
 ---
-Convert the sender's private key to an account
+Convert the sender's private key to an account using **web3.eth.accounts.privateKeyToAccount**
 
 ```js TxCancelType.js focus=10
 
 ```
 ---
-Define a transaction object for the Cancel transaction
+Define a transaction object for the Cancel transaction, params `type: TxType.Cancel` and `from: senderAddr` are required
 
 ```js TxCancelType.js focus=12:15
 
 ```
 ---
-Sign the transaction with the sender's account
+Sign the transaction with the *8sender**'s account
 
 ```js TxCancelType.js focus=17:18
 
 ```
 ---
-Send the signed transaction and log the receipt
+Send the signed transaction to blockchain and print the **receipt**
 
 ```js TxCancelType.js focus=20:21
 

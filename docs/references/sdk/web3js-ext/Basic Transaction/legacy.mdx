@@ -55,42 +55,52 @@ receipt {
 
 ---
 
-Import the `web3` and `@klaytn/web3js-ext` packages  that can interact with the Ethereum Blockchain and its ecosystem.
+Import the **web3** and **@klaytn/web3js-ext** packages to add klaytn features on web3
 
 ```js txTypeLegacyTransaction.js focus=1
 
 ```
 
 ---
-Define sender address, sender private key, receiver address
+Define **sender, reciver address and sender private key**
 ```js txTypeLegacyTransaction.js focus=2:4
 
 ```
 
 ---
 
-Setup the provider. A provider in web3 is a read-only abstraction to access the blockchain data.
-```js txTypeLegacyTransaction.js focus=6:7
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in web3j is a read-only abstraction to access the blockchain data.
+```js txTypeLegacyTransaction.js focus=6
 
 ```
 ---
-Define transaction data
+
+Also, you can change the provider URL from **baobab** to **allthatnode**
+```js txTypeLegacyTransaction.js focus=6
+
+```
+---
+Create a **KlaytnWeb3** instance using the provider
+```js txTypeLegacyTransaction.js focus=7
+```
+---
+Define transaction data with from (the sender address), to (receiver address), value (amount to transfer, use **toPeb** to set the value in Klay then it will be converted)
 ```js txTypeLegacyTransaction.js focus=8:12
 ```
 ---
-The **privateKeyToAccount** method create account instance.
+The **privateKeyToAccount** method create account instance from sender's private key.
 
 ```js txTypeLegacyTransaction.js focus=13
 
 ```
 ---
-The **signTransaction** method sign transaction by account instance.
+The **signTransaction** method signs transaction with sender account.
 
 ```js txTypeLegacyTransaction.js focus=14:15
 
 ```
 ---
-The **sendSignedTransaction** method send transaction signed into blockchain.
+The **sendSignedTransaction** method send the signed transaction into blockchain.
 
 ```js txTypeLegacyTransaction.js focus=16
 
