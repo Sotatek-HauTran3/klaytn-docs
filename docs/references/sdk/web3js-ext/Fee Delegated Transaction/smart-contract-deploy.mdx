@@ -5,44 +5,41 @@
 <CH.Code>
 
 ```js FeeDelegatedSmartContractDeployExample.js
-const { Wallet, TxType } = require("@klaytn/ethers-ext");
-const ethers = require("ethers");
+const { Web3, TxType } = require("@klaytn/web3js-ext");
 
 const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
 const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
 const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
 const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
 
-async function main() {
-  const provider = new ethers.providers.JsonRpcProvider("https://public-en-baobab.klaytn.net");
-  const senderWallet = new Wallet(senderPriv, provider);
-  const feePayerWallet = new Wallet(feePayerPriv, provider);
+const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+const web3 = new Web3(provider);
+const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
 
-  let tx = {
-    type: TxType.FeeDelegatedSmartContractDeployWithRatio,
-    to:    "0x0000000000000000000000000000000000000000",
-    value: 0,
+async function main() {
+  const tx = {
+    type: TxType.FeeDelegatedSmartContractDeploy,
     from: senderAddr,
-    input: "0x608060405234801561001057600080fd5b5060f78061001f6000396000f3fe6080604052348015600f57600080fd5b5060043610603c5760003560e01c80633fb5c1cb1460415780638381f58a146053578063d09de08a14606d575b600080fd5b6051604c3660046083565b600055565b005b605b60005481565b60405190815260200160405180910390f35b6051600080549080607c83609b565b9190505550565b600060208284031215609457600080fd5b5035919050565b60006001820160ba57634e487b7160e01b600052601160045260246000fd5b506001019056fea2646970667358221220e0f4e7861cb6d7acf0f61d34896310975b57b5bc109681dbbfb2e548ef7546b364736f6c63430008120033",
-    humanReadable: false,
-    feeRatio: 30,
-    codeFormat: 0x00,
+    data: "0x608060405234801561001057600080fd5b5060f78061001f6000396000f3fe6080604052348015600f57600080fd5b5060043610603c5760003560e01c80633fb5c1cb1460415780638381f58a146053578063d09de08a14606d575b600080fd5b6051604c3660046083565b600055565b005b605b60005481565b60405190815260200160405180910390f35b6051600080549080607c83609b565b9190505550565b600060208284031215609457600080fd5b5035919050565b60006001820160ba57634e487b7160e01b600052601160045260246000fd5b506001019056fea2646970667358221220e0f4e7861cb6d7acf0f61d34896310975b57b5bc109681dbbfb2e548ef7546b364736f6c63430008120033",
+    humanReadable: false, // must be false
+    codeFormat: 0, // must be 0
   };
 
-  tx = await senderWallet.populateTransaction(tx);
-  console.log(tx);
+  // Sign transaction by sender
+  const signResult1 = await senderAccount.signTransaction(tx);
+  console.log("senderTxHashRLP", signResult1.rawTransaction);
 
-  const senderTxHashRLP = await senderWallet.signTransaction(tx);
-  console.log("senderTxHashRLP", senderTxHashRLP);
+  // Sign and send transaction by fee payer
+  const signResult2 = await feePayerAccount.signTransactionAsFeePayer(signResult1.rawTransaction);
+  console.log("signedTx", signResult2.transactionHash);
 
-  const sentTx = await feePayerWallet.sendTransactionAsFeePayer(senderTxHashRLP);
-  console.log("sentTx", sentTx);
-
-  const rc = await sentTx.wait();
-  console.log("receipt", rc);
+  const receipt = await web3.eth.sendSignedTransaction(signResult2.rawTransaction);
+  console.log("receipt", receipt);
 }
 
 main();
+
 ```
 ---
 ```zsh output
@@ -69,7 +66,7 @@ receipt {
 </CH.Code>
 
 ---
-Import necessary classes from Klaytn ethers extension and ethers library
+Import the **web3** and **@klaytn/web3js-ext** packages to add klaytn features on web3
 
 
 ```js FeeDelegatedSmartContractDeployExample.js focus=1:2
@@ -77,71 +74,117 @@ Import necessary classes from Klaytn ethers extension and ethers library
 ```
 ---
 
-Define sender and fee payer addresses and private keys
+Define **sender**, **fee payer** addresses and private keys
 
-```js FeeDelegatedSmartContractDeployExample.js focus=4:7
+```js FeeDelegatedSmartContractDeployExample.js focus=3:6
 
 ```
 ---
-Create a provider connected to the Klaytn Baobab testnet
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in web3 is a read-only abstraction to access the blockchain data.
 
+
+```js FeeDelegatedSmartContractDeployExample.js focus=8:9
+
+```
+---
+Also, you can change the provider URL from **baobab** to **allthatnode**
+
+
+```js FeeDelegatedSmartContractDeployExample.js focus=8
+const { Web3, TxType } = require("@klaytn/web3js-ext");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
+const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
+
+const provider = new Web3.providers.HttpProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
+const web3 = new Web3(provider);
+const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
+
+async function main() {
+  const tx = {
+    type: TxType.FeeDelegatedSmartContractDeploy,
+    from: senderAddr,
+    data: "0x608060405234801561001057600080fd5b5060f78061001f6000396000f3fe6080604052348015600f57600080fd5b5060043610603c5760003560e01c80633fb5c1cb1460415780638381f58a146053578063d09de08a14606d575b600080fd5b6051604c3660046083565b600055565b005b605b60005481565b60405190815260200160405180910390f35b6051600080549080607c83609b565b9190505550565b600060208284031215609457600080fd5b5035919050565b60006001820160ba57634e487b7160e01b600052601160045260246000fd5b506001019056fea2646970667358221220e0f4e7861cb6d7acf0f61d34896310975b57b5bc109681dbbfb2e548ef7546b364736f6c63430008120033",
+    humanReadable: false, // must be false
+    codeFormat: 0, // must be 0
+  };
+
+  // Sign transaction by sender
+  const signResult1 = await senderAccount.signTransaction(tx);
+  console.log("senderTxHashRLP", signResult1.rawTransaction);
+
+  // Sign and send transaction by fee payer
+  const signResult2 = await feePayerAccount.signTransactionAsFeePayer(signResult1.rawTransaction);
+  console.log("signedTx", signResult2.transactionHash);
+
+  const receipt = await web3.eth.sendSignedTransaction(signResult2.rawTransaction);
+  console.log("receipt", receipt);
+}
+
+main();
+
+```
+---
+
+Create a **sender wallet** with the private key using `web3.eth.accounts.privateKeyToAccount`
 
 ```js FeeDelegatedSmartContractDeployExample.js focus=10
 
 ```
 ---
 
-Create sender and fee payer wallets using their private keys and the provider
+Create a **fee payer wallet** with the private key using `web3.eth.accounts.privateKeyToAccount`
 
-```js FeeDelegatedSmartContractDeployExample.js focus=11:12
+```js FeeDelegatedSmartContractDeployExample.js focus=11
 
 ```
 ---
 
 Define a transaction object
-```js FeeDelegatedSmartContractDeployExample.js focus=14:23
+```js FeeDelegatedSmartContractDeployExample.js focus=14:19
+
+```
+---
+
+Set `type: TxType.FeeDelegatedSmartContractDeploy` for transaction to deploy a new contract with a fee payer
+```js FeeDelegatedSmartContractDeployExample.js focus=15
+
+```
+---
+
+Set `data: "0x60806040...` is the bytecode of the compile solidity source code
+```js FeeDelegatedSmartContractDeployExample.js focus=17
+
+```
+---
+
+Set others required parameters such as **senderAddr**, **humanReadable**, **codeFormat**
+```js FeeDelegatedSmartContractDeployExample.js focus=16,18,19
 
 ```
 
 ---
-The contract code to deploy
+Sign the transaction with **sender** account using `signTransaction`
 
-```js FeeDelegatedSmartContractDeployExample.js focus=19
+```js FeeDelegatedSmartContractDeployExample.js focus=22:24
 
 ```
 
 ---
-
-Define [fee ratio](https://archive-docs.klaytn.foundation/content/klaytn/design/transactions/partial-fee-delegation) paid by sender and fee payer
-```js FeeDelegatedSmartContractDeployExample.js focus=21
-
-```
----
-Populate the transaction with additional data (e.g., gas, nonce) using sender's wallet
+Sign the transaction with **fee payer** account using `signTransactionAsFeePayer`
 
 
-```js FeeDelegatedSmartContractDeployExample.js focus=25:26
+```js FeeDelegatedSmartContractDeployExample.js focus=26:28
 
 ```
 ---
-Sign the transaction with the sender's private key
+Send the transaction to blockchain. It will return the transaction receipt
 
 
-```js FeeDelegatedSmartContractDeployExample.js focus=28:29
-
-```
----
-Send the transaction, where the fee is paid by the fee payer wallet
-
-
-```js FeeDelegatedSmartContractDeployExample.js focus=31:32
-
-```
----
-Wait for the transaction receipt
-
-
-```js FeeDelegatedSmartContractDeployExample.js focus=34:35
+```js FeeDelegatedSmartContractDeployExample.js focus=30:31
 
 ```
 

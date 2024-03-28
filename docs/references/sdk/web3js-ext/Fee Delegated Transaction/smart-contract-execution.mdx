@@ -5,65 +5,46 @@
 <CH.Code>
 
 ```js FeeDelegatedSmartContractExecution.js
-const { KlaytnWeb3, TxType, parseTransaction } = require("@klaytn/web3js-ext");
-const { Web3 } = require("web3");
+const { Web3, TxType } = require("@klaytn/web3js-ext");
 
 const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
 const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
 const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
 const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
+
+const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+const web3 = new Web3(provider);
+const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
+
 const contractAddr = "0xD7fA6634bDDe0B2A9d491388e2fdeD0fa25D2067";
-const contractAbi = [
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "newNumber",
-        "type": "uint256"
-      }
-    ],
-    "name": "setNumber",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-];
+const contractAbi = JSON.parse('[{"inputs":[{"internalType":"uint256","name":"newNumber","type":"uint256"}],"name":"setNumber","outputs":[],"stateMutability":"nonpayable","type":"function"}]');
 
 async function main() {
-  const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
-  const web3 = new KlaytnWeb3(provider);
-  const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
-
-  // https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-encodeabi
   const contract = new web3.eth.Contract(contractAbi, contractAddr);
   const data = contract.methods.setNumber(0x123).encodeABI();
 
-  let tx = {
-    type: TxType.FeeDelegatedSmartContractExecutionWithRatio,
+  const tx = {
+    type: TxType.FeeDelegatedSmartContractExecution,
     from: senderAddr,
     to: contractAddr,
     data: data,
-    gasLimit: 100_000,
-    feeRatio: 60,
   };
 
+  // Sign transaction by sender
   const signResult1 = await senderAccount.signTransaction(tx);
-  console.log("senderRawTx", signResult1.rawTransaction);
-  console.log("senderTx", parseTransaction(signResult1.rawTransaction));
+  console.log("senderTxHashRLP", signResult1.rawTransaction);
 
-  // Next step is usually done in the backend by the service provider.
-  // But for the sake of demonstration, feePayer signature is done here.
-
-  const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
+  // Sign and send transaction by fee payer
   const signResult2 = await feePayerAccount.signTransactionAsFeePayer(signResult1.rawTransaction);
-  console.log("rawTx", signResult2.rawTransaction);
-  console.log("tx", parseTransaction(signResult2.rawTransaction));
+  console.log("signedTx", signResult2.transactionHash);
 
   const receipt = await web3.eth.sendSignedTransaction(signResult2.rawTransaction);
   console.log("receipt", receipt);
 }
 
 main();
+
 
 ```
 
@@ -92,14 +73,14 @@ receipt {
 </CH.Code>
 
 ---
-Import necessary utils from web3 and web3js-ext
+Import the **web3** and **@klaytn/web3js-ext** packages to add klaytn features on web3
 
-```js FeeDelegatedSmartContractExecution.js focus=1:2
+```js FeeDelegatedSmartContractExecution.js focus=1
 
 ```
 ---
-Define sender and fee payer addresses and private keys
-```js FeeDelegatedSmartContractExecution.js focus=4:7
+Define **sender**, **fee payer** addresses and private keys
+```js FeeDelegatedSmartContractExecution.js focus=3:6
 
 ```
 ---
@@ -108,54 +89,117 @@ Define contract address and abi
 
 ```
 ---
-Connect to the Baobab testnet
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in web3 is a read-only abstraction to access the blockchain data.
 
-```js FeeDelegatedSmartContractExecution.js focus=26:27
-
-```
----
-Create a sender account using the private key
-
-```js FeeDelegatedSmartContractExecution.js focus=28
+```js FeeDelegatedSmartContractExecution.js focus=8:9
 
 ```
 ---
-Create a contract instance
+Also, you can change the provider URL from **baobab** to **allthatnode**
 
-```js FeeDelegatedSmartContractExecution.js focus=31
+```js FeeDelegatedSmartContractExecution.js focus=8
+const { Web3, TxType } = require("@klaytn/web3js-ext");
+
+const senderAddr = "0xa2a8854b1802d8cd5de631e690817c253d6a9153";
+const senderPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const feePayerAddr = "0xcb0eb737dfda52756495a5e08a9b37aab3b271da";
+const feePayerPriv = "0x9435261ed483b6efa3886d6ad9f64c12078a0e28d8d80715c773e16fc000cff4";
+
+const provider = new Web3.providers.HttpProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
+const web3 = new Web3(provider);
+const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+const feePayerAccount = web3.eth.accounts.privateKeyToAccount(feePayerPriv);
+
+const contractAddr = "0xD7fA6634bDDe0B2A9d491388e2fdeD0fa25D2067";
+const contractAbi = JSON.parse('[{"inputs":[{"internalType":"uint256","name":"newNumber","type":"uint256"}],"name":"setNumber","outputs":[],"stateMutability":"nonpayable","type":"function"}]');
+
+async function main() {
+  const contract = new web3.eth.Contract(contractAbi, contractAddr);
+  const data = contract.methods.setNumber(0x123).encodeABI();
+
+  const tx = {
+    type: TxType.FeeDelegatedSmartContractExecution,
+    from: senderAddr,
+    to: contractAddr,
+    data: data,
+  };
+
+  // Sign transaction by sender
+  const signResult1 = await senderAccount.signTransaction(tx);
+  console.log("senderTxHashRLP", signResult1.rawTransaction);
+
+  // Sign and send transaction by fee payer
+  const signResult2 = await feePayerAccount.signTransactionAsFeePayer(signResult1.rawTransaction);
+  console.log("signedTx", signResult2.transactionHash);
+
+  const receipt = await web3.eth.sendSignedTransaction(signResult2.rawTransaction);
+  console.log("receipt", receipt);
+}
+
+main();
 
 ```
 ---
-Encode the function data for the "setNumber" function
+Create a **sender wallet** with the private key using `web3.eth.accounts.privateKeyToAccount`
 
-```js FeeDelegatedSmartContractExecution.js focus=32
-
-```
----
-Build the transaction object
-
-```js FeeDelegatedSmartContractExecution.js focus=34:41
+```js FeeDelegatedSmartContractExecution.js focus=10
 
 ```
 ---
-Sign the transaction with the sender's private key
+Create a **fee payer wallet** with the private key using `web3.eth.accounts.privateKeyToAccount`
 
-```js FeeDelegatedSmartContractExecution.js focus=43:45
-
-```
----
-Define fee payer acount
-```js FeeDelegatedSmartContractExecution.js focus=50
+```js FeeDelegatedSmartContractExecution.js focus=11
 
 ```
 ---
-Sign the transaction with fee payer account
-```js FeeDelegatedSmartContractExecution.js focus=51:53
+Define **contractAddr** and **contractAbi**, you can get the contract address and Abi from compiled solidity code or blockchain explorer
+
+```js FeeDelegatedSmartContractExecution.js focus=13:14
 
 ```
 ---
-Send the transaction to network and wait for the receipt
-```js FeeDelegatedSmartContractExecution.js focus=55:56
+Create a contract instance using `web3.eth.Contract(contractAbi, contractAddr)`
+
+```js FeeDelegatedSmartContractExecution.js focus=17
+
+```
+
+---
+Encode the function data for the `setNumber` function, `encodeABI` convert the data into bytecode
+
+```js FeeDelegatedSmartContractExecution.js focus=18
+
+```
+---
+Create the transaction object to interact with the contract
+
+```js FeeDelegatedSmartContractExecution.js focus=20:25
+
+```
+---
+Set `type: TxType.FeeDelegatedSmartContractExecution` for transaction to change contract state with a fee payer
+```js FeeDelegatedSmartContractExecution.js focus=21
+
+```
+---
+Set `data: data` for earlier encoded function data 
+```js FeeDelegatedSmartContractExecution.js focus=24
+
+```
+---
+Sign the transaction with **sender** account using `signTransaction`
+
+```js FeeDelegatedSmartContractExecution.js focus=27:29
+
+```
+---
+Sign the transaction with **fee payer** account using `signTransactionAsFeePayer`
+```js FeeDelegatedSmartContractExecution.js focus=31:33
+
+```
+---
+Send the transaction to blockchain. It will return the transaction receipt
+```js FeeDelegatedSmartContractExecution.js focus=35:36
 
 ```
 

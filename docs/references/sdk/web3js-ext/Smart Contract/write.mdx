@@ -104,33 +104,39 @@ number after 295
 ```
 </CH.Code>
 ---
-Import necessary utils from @klaytn/web3js-ext
+Import the **web3** and **@klaytn/web3js-ext** packages to add klaytn features on web3
+
 ```js smartContractWrite.js focus=1
 
 ```
 ---
-Define sender address and private key
+Define sender's **address** and **private key**
 ```js smartContractWrite.js focus=3:4
 
 ```
 ---
-Connect to web3 using Web3.provider and RPC endpoint
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in web3 is a read-only abstraction to access the blockchain data.
 ```js smartContractWrite.js focus=6:7
 
 ```
 ---
-Create a sender's account from defined private key
+Also, you can change the provider URL from **baobab** to **allthatnode**
+```js smartContractWrite.js focus=6
+
+```
+---
+Create a sender's account using `web3.eth.accounts.privateKeyToAccount`
 ```js smartContractWrite.js focus=8
 
 ```
 ---
-Define contract Abi and address to interact with
+Define contract **Abi** and **address** to interact with
 ```js smartContractWrite.js focus=33:34
 
 ```
 
 ---
-Create a contract instance using Web3.eth.Contract and defined contractAbi
+Create a contract instance using `Web3.eth.Contract` and defined contractAbi
 ```js smartContractWrite.js focus=37
 
 ```
