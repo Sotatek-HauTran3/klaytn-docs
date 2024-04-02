@@ -118,9 +118,7 @@ TxType : VALUE_TRANSFER
 </CH.Code>
 
 ---
-
 Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
-
 ```java txTypeValueTransferTransaction.java focus=1:17
 
 ```
@@ -128,42 +126,61 @@ Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
 
 ---
-Define web3 instance.
+Connect to the Klaytn blockchain using Web3j and specify the URL
 ```java txTypeValueTransferTransaction.java focus=28:28
 
 ```
 ---
-Define your account.
+Create KlayCredentials using the private key
 ```java txTypeValueTransferTransaction.java focus=29:29
 
 ```
 
 ---
-Declare transaction params such as type, from, to, value. Such params can be found here 
+Define gas price and gas limit for the transaction
 
-```java txTypeValueTransferTransaction.java focus=31:41
+```java txTypeValueTransferTransaction.java focus=31:32
+
+```
+---
+Get the sender's address from `credentials.getAddress()`
+
+```java txTypeValueTransferTransaction.java focus=33
+
+```
+---
+Get the chain ID from the **Klaytn** network
+
+```java txTypeValueTransferTransaction.java focus=34
+
+```
+---
+Initialize variables for transaction parameters
+
+```java txTypeValueTransferTransaction.java focus=35:41
+
+```
+---
+Create a raw transaction object using above parameters
+```java txTypeValueTransferTransaction.java focus=43:50
 
 ```
 ---
 
-Sign the transaction with your account.
-
-
+Sign the raw transaction
 
 ```java txTypeValueTransferTransaction.java focus=52
 
 ```
 ---
 
-Send the signed transaction.
-
+Send the transaction to Klaytn network.
 
 <CH.Code>
 
 ```java txTypeValueTransferTransaction.java focus=53:55
 
 ```
-
 
 ---
 
@@ -175,7 +192,7 @@ Send the signed transaction.
 </CH.Code>
 
 ---
-Get transaction receipt.
+Get the transaction receipt 
 
 <CH.Code>
 
@@ -224,12 +241,13 @@ class TransactionReceipt {
 
 
 ---
-Shutdown
+Shut down the Web3j connection
+
 ```java txTypeValueTransferTransaction.java focus=64
 
 ```
 ---
-Get sent transaction type.
+Decode the raw transaction to get the transaction type
 <CH.Code>
 ```java txTypeValueTransferTransaction.java focus=66:67
 

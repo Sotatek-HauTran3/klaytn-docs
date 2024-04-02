@@ -89,7 +89,7 @@ public class FeeDelegatedValueTransferExample implements keySample {
 
 ---
 
-Import the `ethers` package that can interact with the Ethereum Blockchain and its ecosystem.
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
 ```java TxTypeFeeDelegatedValueTransfer.java focus=1:18
 
@@ -98,47 +98,73 @@ Import the `ethers` package that can interact with the Ethereum Blockchain and i
 
 
 ---
-Define web3 instance.
+Connect to the Klaytn blockchain using Web3j and specify the URL
 ```java TxTypeFeeDelegatedValueTransfer.java focus=23
 
 ```
 ---
-Define your account.
-```java TxTypeFeeDelegatedValueTransfer.java focus=24
+Creating **sender** and **fee payer** credentials using private keys.
+```java TxTypeFeeDelegatedValueTransfer.java focus=24:25
 
 ```
 ---
-Define your fee payer account.
-```java TxTypeFeeDelegatedValueTransfer.java focus=25
+Define gas price and gas limit for the transaction
+
+```java TxTypeFeeDelegatedValueTransfer.java focus=27:28
 
 ```
 ---
-Declare transaction params such as type, from, to, value. Such params can be found here
+Get the sender's address from `credentials.getAddress()`
 
-```java TxTypeFeeDelegatedValueTransfer.java focus=27:46
+```java TxTypeFeeDelegatedValueTransfer.java focus=29
+
+```
+---
+Get the chain ID from the **Klaytn** network
+
+```java TxTypeFeeDelegatedValueTransfer.java focus=31:32
+
+```
+---
+Getting the **nonce** for the sender's address
+
+
+
+```java TxTypeFeeDelegatedValueTransfer.java focus=33:34
+```
+---
+Initialize variables for transaction parameters
+
+```java TxTypeFeeDelegatedValueTransfer.java focus=35:37
+
+```
+---
+Create a raw transaction object using above parameters
+
+```java TxTypeFeeDelegatedValueTransfer.java focus=39:56
 
 ```
 ---
 
-Sign the transaction with your account.
+Signing the transaction as **sender** using `KlayTransactionEncoder.signMessage`. 
 
-
-
-```java TxTypeFeeDelegatedValueTransfer.java focus=52
+```java TxTypeFeeDelegatedValueTransfer.java focus=48:49
 
 ```
 ---
 
-Send the signed transaction.
+Signing the transaction as fee payer using `KlayTransactionEncoder.signMessageAsFeePayer`. 
 
+```java TxTypeFeeDelegatedValueTransfer.java focus=51:52
 
+```
+---
+Sending the signed transaction to Klaytn network
 
 <CH.Code>
 ```java TxTypeFeeDelegatedValueTransfer.java focus=53:55
 
 ```
-
-
 ---
 
 ```zsh output
@@ -149,7 +175,7 @@ Send the signed transaction.
 </CH.Code>
 
 ---
-Get transaction receipt.
+Getting the transaction receipt
 
 <CH.Code>
 
@@ -201,12 +227,12 @@ class TransactionReceipt {
 
 
 ---
-Shutdown web3.
+Shutting down the Web3j instance
 ```java TxTypeFeeDelegatedValueTransfer.java focus=65
 
 ```
 ---
-Get sent transaction type.
+Decoding the raw transaction to get the transaction type
 <CH.Code>
 ```java TxTypeFeeDelegatedValueTransfer.java focus=67:68
 

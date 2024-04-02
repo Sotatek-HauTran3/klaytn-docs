@@ -106,62 +106,57 @@ number after : 50
 
 
 ---
-Import necessary utils from web3j
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 ```java WriteContractWithFeeDelegationExample.java focus=3:26
 
 ```
 
 ---
-Initialize Web3j instance using the Baobab testnet URL
+Connect to the Klaytn blockchain using Web3j and specify the URL
 ```java WriteContractWithFeeDelegationExample.java focus=35
 
 ```
 
 ---
-Create KlayCredentials for the sender
-```java WriteContractWithFeeDelegationExample.java focus=36
-
-```
-
----
-Create KlayCredentials for the fee payer
+Creating **sender** and **fee payer** credentials using private keys.
 ```java WriteContractWithFeeDelegationExample.java focus=37
 
 ```
 
+
 ---
-Specify the address of the deployed contract
+Specify the **address** of the deployed contract
 ```java WriteContractWithFeeDelegationExample.java focus=38
 
 ```
 
 ---
-Define gas price and gas limit for contract transactions
+Define gas price and gas limit for the transaction
 ```java WriteContractWithFeeDelegationExample.java focus=39:40
 
 ```
 
 ---
-Get the sender's address
+Get the sender's address from `credentials.getAddress()`
 ```java WriteContractWithFeeDelegationExample.java focus=41
 
 ```
 
 ---
-Get the sender's nonce
+Getting the **nonce** for the sender's address
 ```java WriteContractWithFeeDelegationExample.java focus=42
 
 ```
 
 ---
-Get the chain ID
+Get the chain ID from the **Klaytn** network
 ```java WriteContractWithFeeDelegationExample.java focus=44:45
 
 ```
 
 ---
-Set value to zero since it's a contract call
-```java WriteContractWithFeeDelegationExample.java focus=46
+Initialize variables for transaction parameters
+```java WriteContractWithFeeDelegationExample.java focus=46:47
 
 ```
 
@@ -172,25 +167,25 @@ Create a gas provider with static gas price and gas limit
 ```
 
 ---
-Load the contract using its address, Web3j instance, credentials, and gas provider
+Load the contract using **contact address**, **Web3j instance**, **credentials**, and **gas provider**
 ```java WriteContractWithFeeDelegationExample.java focus=48
 
 ```
 
 ---
-Get the current number stored in the contract before writing
+Get the current **number** stored in the contract before writing
 ```java WriteContractWithFeeDelegationExample.java focus=50:51
 
 ```
 
 ---
-Create a function to set the number with the desired value
+Create a function to set the **number** with the desired value
 ```java WriteContractWithFeeDelegationExample.java focus=53:58
 
 ```
 
 ---
-Define the transaction type as fee delegated smart contract execution
+Define the transaction type as **FEE_DELEGATED_SMART_CONTRACT_EXECUTION**
 ```java WriteContractWithFeeDelegationExample.java focus=60
 
 ```
@@ -201,17 +196,17 @@ Create a raw transaction
 
 ```
 ---
-Sign the transaction as the sender
+Signing the transaction as **sender** using `KlayTransactionEncoder.signMessage`. 
 ```java WriteContractWithFeeDelegationExample.java focus=72:73
 
 ```
 ---
-Sign the same message as the fee payer
+Signing the transaction as fee payer using `KlayTransactionEncoder.signMessageAsFeePayer`. 
 ```java WriteContractWithFeeDelegationExample.java focus=75:76
 
 ```
 ---
-Send the raw transaction to the network
+Sending the signed transaction to Klaytn network
 ```java WriteContractWithFeeDelegationExample.java focus=77:78
 
 ```
@@ -221,17 +216,14 @@ Delay for a short time to ensure the transaction is processed
 
 ```
 ---
-Get the updated number stored in the contract after writing
+Get the updated **number** stored in the contract after writing
 ```java WriteContractWithFeeDelegationExample.java focus=84:85
 
 ```
 ---
-Shutdown the Web3j instance
+Shutting down the Web3j instance
 ```java WriteContractWithFeeDelegationExample.java focus=87
 
 ```
-
-
-
 
 </CH.Spotlight>

@@ -51,17 +51,17 @@ number after : 298
 
 
 ---
-Import necessary utils from web3j
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 ```java WriteContractExample.java focus=3:8
 
 ```
 ---
-Create a web3 connection using Baobab RPC endpoint and web3j
+Connect to the Klaytn blockchain using Web3j and specify the URL
 ```java WriteContractExample.java focus=17
 
 ```
 ---
-Create a wallet from a private key
+Create KlayCredentials using the private key
 ```java WriteContractExample.java focus=18
 
 ```
@@ -81,22 +81,22 @@ Create a gas provider with static gas price and gas limit
 
 ```
 ---
-Load the contract using its address, Web3j instance, credentials, and gas provider
+Load the contract using **contact address**, **Web3j instance**, **credentials**, and **gas provider**
 ```java WriteContractExample.java focus=23
 
 ```
 ---
-Get the current number stored in the contract before writing
+Get the current **number** stored in the contract before writing
 ```java WriteContractExample.java focus=25:26
 
 ```
 ---
-Increment the number stored in the contract by calling the increment function
+Increment the **number** stored in the contract by calling `counter.increment().send()`
 ```java WriteContractExample.java focus=28:29
 
 ```
 ---
-Get the updated number stored in the contract after writing
+Get the updated **number** stored in the contract after writing
 ```java WriteContractExample.java focus=31:32
 
 ```

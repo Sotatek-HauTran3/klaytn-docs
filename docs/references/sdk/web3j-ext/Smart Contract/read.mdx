@@ -44,42 +44,42 @@ Contract Call(number) Result : 297
 
 
 ---
-Import necessary utils from web3j
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 ```java ReadContractExample.java focus=3:8
 
 ```
 ---
-Initialize Web3j instance using the Baobab testnet URL
+Connect to the **Klaytn** blockchain using **Web3j** and specify the URL
 ```java ReadContractExample.java focus=17
 
 ```
 ---
-Create KlayCredentials for the sender
+Create **KlayCredentials** using the private key
 ```java ReadContractExample.java focus=18
 
 ```
 ---
-Specify the address of the deployed contract
+Specify the address of the **contract**
 ```java ReadContractExample.java focus=19
 
 ```
 ---
-Define gas price and gas limit for contract transactions
+Define gas price and gas limit for the transaction
 ```java ReadContractExample.java focus=20:21
 
 ```
 ---
-Create a gas provider with static gas price and gas limit
+Create a gas provider with static **gas price** and **gas limit**
 ```java ReadContractExample.java focus=22
 
 ```
 ---
-Load the contract using its address, Web3j instance, credentials, and gas provider
+Load the contract using **contact address**, **Web3j instance**, **credentials**, and **gas provider**
 ```java ReadContractExample.java focus=23
 
 ```
 ---
-Call the 'number' function of the contract to retrieve the stored value
+Call the `counter.number().send()` function of the contract to retrieve the stored value
 ```java ReadContractExample.java focus=24
 
 ```

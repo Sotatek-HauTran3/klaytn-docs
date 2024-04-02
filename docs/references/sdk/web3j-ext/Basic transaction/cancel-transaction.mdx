@@ -122,15 +122,15 @@ TxType : CANCEL
 
 ---
 
-Import necessary utils from web3j
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
-```java cancelTransactionExample.java focus=
+```java cancelTransactionExample.java focus=1:17
 
 ```
 
 ---
 
-Connect to the Baobab testnet
+Create a Web3j instance with the specified BAOBAB_URL
 
 
 ```java cancelTransactionExample.java focus=29
@@ -138,7 +138,7 @@ Connect to the Baobab testnet
 ```
 ---
 
-Load credentials from a private key
+Creating new credentials using **LEGACY_KEY_privkey**
 
 
 ```java cancelTransactionExample.java focus=30
@@ -146,7 +146,7 @@ Load credentials from a private key
 ```
 ---
 
-Set gas price and gas limit
+Gas price and gas limit settings
 
 
 ```java cancelTransactionExample.java focus=32:33
@@ -154,7 +154,7 @@ Set gas price and gas limit
 ```
 ---
 
-Set the sender address
+Set the sender's **from** address using `credentials.getAddress`
 
 
 ```java cancelTransactionExample.java focus=34
@@ -162,23 +162,23 @@ Set the sender address
 ```
 ---
 
-Get the chain ID from the network
+Get the **chain ID** from the network
 
 
-```java cancelTransactionExample.java focus=36
+```java cancelTransactionExample.java focus=35:36
 
 ```
 
 ---
 
-Get the nonce for the sender address
+Getting the **nonce** for the sender's address
 
 
 ```java cancelTransactionExample.java focus=37:38
 
 ```
 ---
-Set the transaction type to CANCEL
+Set the transaction type to **CANCEL**
 
 
 
@@ -187,14 +187,14 @@ Set the transaction type to CANCEL
 ```
 ---
 
-Create a raw transaction
+Create a raw transaction for canceling **pending transaction**
 
 
 ```java cancelTransactionExample.java focus=42:47
 
 ```
 ---
-Sign the raw transaction
+Sign the raw transaction with pre-defined **credentials**
 
 
 
@@ -202,16 +202,14 @@ Sign the raw transaction
 
 ```
 ---
-Send the raw transaction
-
-
+Send the raw transaction to the blockchain. It will return the transaction hash
 
 ```java cancelTransactionExample.java focus=51:52
 
 ```
 ---
 
-Wait for the transaction receipt
+Get the **transaction receipt** and using the transaction hash
 
 
 ```java cancelTransactionExample.java focus=53:60
@@ -227,7 +225,7 @@ Shutdown the web3j instance
 ```
 ---
 
-Decode and print the transaction type
+Decoding the raw transaction to get the transaction type
 
 ```java cancelTransactionExample.java focus=63:65
 

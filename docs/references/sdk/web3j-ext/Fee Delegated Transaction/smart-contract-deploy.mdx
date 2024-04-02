@@ -143,7 +143,7 @@ TxType : SMART_CONTRACT_DEPLOY
 
 ---
 
-Import necessary classes from the Web3j and Klaytn libraries
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
 ```java FeeDelegatedSmartContractDeployExample.java focus=1:17
 
@@ -158,7 +158,7 @@ Connect to the Klaytn blockchain using Web3j and specify the URL
 ```
 ---
 
-Create KlayCredentials for sender and fee payer using the private key from the keySample interface
+Creating **sender** and **fee payer** credentials using private keys.
 
 
 ```java FeeDelegatedSmartContractDeployExample.java focus=29:30
@@ -173,24 +173,30 @@ Define gas price and gas limit for the transaction
 
 ```
 ---
-Get the sender's address and nonce
+Get the sender's address from `credentials.getAddress()`
 
 
 
-```java FeeDelegatedSmartContractDeployExample.java focus=34:36
+```java FeeDelegatedSmartContractDeployExample.java focus=34
 
 ```
 ---
-Contract bytecode
+Getting the **nonce** for the sender's address
 
 
+
+```java FeeDelegatedSmartContractDeployExample.java focus=35:36
+
+```
+---
+Define contract bytecode
 
 ```java FeeDelegatedSmartContractDeployExample.java focus=37
 
 ```
 ---
 
-Get the chain ID from the Klaytn network
+Get the chain ID from the **Klaytn** network
 
 
 ```java FeeDelegatedSmartContractDeployExample.java focus=38:39
@@ -198,8 +204,6 @@ Get the chain ID from the Klaytn network
 ```
 ---
 Initialize variables for transaction parameters
-
-
 
 ```java FeeDelegatedSmartContractDeployExample.java focus=40:46
 
@@ -215,7 +219,7 @@ Create a raw transaction
 
 ---
 
-Sign the raw transaction as sender
+Signing the transaction as **sender** using `KlayTransactionEncoder.signMessage`. 
 
 
 ```java FeeDelegatedSmartContractDeployExample.java focus=59:60
@@ -223,7 +227,7 @@ Sign the raw transaction as sender
 ```
 ---
 
-Sign the raw transaction as fee payer
+Signing the transaction as fee payer using `KlayTransactionEncoder.signMessageAsFeePayer`. 
 
 
 ```java FeeDelegatedSmartContractDeployExample.java focus=62:63
@@ -231,7 +235,7 @@ Sign the raw transaction as fee payer
 ```
 ---
 
-Send the transaction to Klaytn network.
+Sending the signed transaction to Klaytn network
 
 
 ```java FeeDelegatedSmartContractDeployExample.java focus=65:67
@@ -239,24 +243,21 @@ Send the transaction to Klaytn network.
 ```
 ---
 
-Get the transaction receipt 
-
+Getting the transaction receipt
 
 ```java FeeDelegatedSmartContractDeployExample.java focus=67:75
 
 ```
 ---
 
-Shut down the Web3j connection
-
+Shutting down the Web3j instance
 
 ```java FeeDelegatedSmartContractDeployExample.java focus=76
 
 ```
 ---
 
-Decode the raw transaction to get the transaction type
-
+Decoding the raw transaction to get the transaction type
 
 ```java FeeDelegatedSmartContractDeployExample.java focus=78:79
 

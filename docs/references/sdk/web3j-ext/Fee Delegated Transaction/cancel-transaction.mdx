@@ -131,13 +131,13 @@ TxType : FEE_DELEGATED_CANCEL
 
 
 ---
-Import necessary utils from Web3j
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
 ```java FeeDelegatedCancel.java focus=1:17
 
 ```
 ---
-Connect to the Baobab testnet
+Create a Web3j instance with the specified BAOBAB_URL
 
 
 ```java FeeDelegatedCancel.java focus=29
@@ -145,41 +145,41 @@ Connect to the Baobab testnet
 ```
 ---
 
-Load credentials for the sender and fee payer
+Load credentials for **sender** and **fee payer**
 
 ```java FeeDelegatedCancel.java focus=30:31
 
 ```
 ---
-Set gas price and gas limit
+Gas price and gas limit settings
 
 
 ```java FeeDelegatedCancel.java focus=33:34
 
 ```
 ---
-Set the sender address
+Set the sender's **from** address using `credentials.getAddress`
 
 
 ```java FeeDelegatedCancel.java focus=35
 
 ```
 ---
-Get the chain ID from the network
+Get the **chain ID** from the network
 
 
 ```java FeeDelegatedCancel.java focus=37
 
 ```
 ---
-Get the nonce for the sender address
+Getting the **nonce** for the sender's address
 
 
 ```java FeeDelegatedCancel.java focus=38:39
 
 ```
 ---
-Set the transaction type to FEE_DELEGATED_CANCEL
+Set the transaction type to **FEE_DELEGATED_CANCEL**
 
 
 ```java FeeDelegatedCancel.java focus=41
@@ -187,42 +187,35 @@ Set the transaction type to FEE_DELEGATED_CANCEL
 ```
 
 ---
-Create a raw transaction
+Create a raw transaction for canceling **pending transaction**
 
 
 ```java FeeDelegatedCancel.java focus=43:48
 
 ```
 ---
-Sign the raw transaction as the sender
+Signing the transaction as **sender** using `KlayTransactionEncoder.signMessage`. 
 
 
 ```java FeeDelegatedCancel.java focus=50:51
 
 ```
 ---
-Sign the same message as the fee payer
+Signing the transaction as fee payer using `KlayTransactionEncoder.signMessageAsFeePayer`. 
 
 
 ```java FeeDelegatedCancel.java focus=53:54
 
 ```
 ---
-Convert the signed message to hex
+Sending the signed transaction to Klaytn network
 
 
-```java FeeDelegatedCancel.java focus=56
-
-```
----
-Send the raw transaction
-
-
-```java FeeDelegatedCancel.java focus=57:58
+```java FeeDelegatedCancel.java focus=56:58
 
 ```
 ---
-Wait for the transaction receipt
+Getting the transaction receipt
 
 
 ```java FeeDelegatedCancel.java focus=59:66
@@ -237,7 +230,7 @@ Shutdown the web3j instance
 ```
 ---
 
-Decode and print the transaction type
+Decoding the raw transaction to get the transaction type
 
 ```java FeeDelegatedCancel.java focus=69:71
 

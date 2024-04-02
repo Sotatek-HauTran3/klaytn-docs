@@ -129,50 +129,51 @@ TxType : SMART_CONTRACT_DEPLOY
 
 
 ---
-Import necessary utils from web3j
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 ```java smartContractDeploy.java focus=1:17
 
 ```
 ---
-Connect to the Baobab testnet
+Connect to the Klaytn blockchain using Web3j and specify the URL
 
 ```java smartContractDeploy.java focus=28
 
 ```
 ---
-Load sender account from private key
+Create KlayCredentials using the private key
 ```java smartContractDeploy.java focus=29
 
 ```
 ---
-Set gas price, gas limit, sender address, and nonce
+Define gas price and gas limit for the transaction
 
-```java smartContractDeploy.java focus=31:35
+```java smartContractDeploy.java focus=31:32
 
 ```
 ---
-Smart contract bytecode data
+Get the sender's address and nonce
+
+```java smartContractDeploy.java focus=33:35
+
+```
+---
+Define contract bytecode
 
 ```java smartContractDeploy.java focus=36
 
 ```
 ---
-Get the network id
+Get the chain ID from the **Klaytn** network
 ```java smartContractDeploy.java focus=37:38
 
 ```
 ---
-Initialize transaction parameters
+Initialize variables for transaction parameters
 
-```java smartContractDeploy.java focus=42:44
-
-```
----
-Set the transaction type to smart contract deployment
-
-```java smartContractDeploy.java focus=44
+```java smartContractDeploy.java focus=39:44
 
 ```
+
 ---
 Create a raw transaction
 
@@ -180,31 +181,31 @@ Create a raw transaction
 
 ```
 ---
-Sign the raw transaction
+Sign the raw transaction using `KlayRawTransaction.createTransaction`
 
 ```java smartContractDeploy.java focus=57:58
 
 ```
 ---
-Send the signed transaction
+Send the transaction to Klaytn network
 
 ```java smartContractDeploy.java focus=59:60
 
 ```
 ---
-Get and print the transaction receipt
+Get the transaction receipt 
 
 ```java smartContractDeploy.java focus=61:68
 
 ```
 ---
-Shutdown the web3 instance
+Shut down the Web3j connection
 
 ```java smartContractDeploy.java focus=69
 
 ```
 ---
-Decode and print the transaction type
+Decode the raw transaction to get the transaction type
 
 ```java smartContractDeploy.java focus=71:73
 

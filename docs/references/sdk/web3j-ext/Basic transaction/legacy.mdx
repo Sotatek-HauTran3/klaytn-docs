@@ -72,7 +72,7 @@ public class LegacyExample implements keySample {
 
 ---
 
-Import the `web3j-ext` package and corresponding class that can interact with the Ethereum Blockchain and its ecosystem
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
 ```java txTypeLegacyTransaction.java focus=2:15
 
@@ -80,65 +80,70 @@ Import the `web3j-ext` package and corresponding class that can interact with th
 
 ---
 
-Connect to the Klaytn blockchain using Web3j and specify the URL
+Create a Web3j instance with the specified BAOBAB_URL
 
 ```java txTypeLegacyTransaction.java focus=19
 
 ```
 
 ---
-
-Create KlayCredentials using the private key
+Creating new credentials using the private key
 
 ```java txTypeLegacyTransaction.java focus=20:21
 
 ```
 ---
 
-Define Gas price and Gas limit for transaction.
+Gas price and gas limit settings
 
 ```java txTypeLegacyTransaction.java focus=22:23
 
 ```
 ---
-Determine from, to address.
+Set the sender's **from** and receiver's **to** address
 
 ```java txTypeLegacyTransaction.java focus=24:25
 
 ```
 ---
-Get chain id and nonce
+Get the **chain ID** from the network
 
-```java txTypeLegacyTransaction.java focus=26:29
+```java txTypeLegacyTransaction.java focus=26:27
 
 ```
 ---
-Define value of transaction
+Get the user's **nonce** from the network
+
+```java txTypeLegacyTransaction.java focus=28:29
+
+```
+---
+Define the **value** to transfer from sender to receiver
 
 ```java txTypeLegacyTransaction.java focus=30
 
 ```
 ---
-Create raw transaction
+Create a raw **transaction** using above params
 
 ```java txTypeLegacyTransaction.java focus=31:36
 
 ```
 ---
-Sign transaction with with web3j-ext klaycredentials and encode to Hex string.
+Sign transaction with with `web3j-ext` `klaycredentials` and encode to Hex string using `Numeric.toHexString`.
 
 ```java txTypeLegacyTransaction.java focus=37:38
 
 ```
 ---
-**ethSendRawTransaction** method send signed transaction with web3j-credentials.
+Using `ethSendRawTransaction` method to send the signed transaction to the blockchain.
 
 ```java txTypeLegacyTransaction.java focus=39:40
 
 ```
 ---
 
-Get the receipt hash.
+Get the receipt hash returned.
 
 <CH.Code>
 

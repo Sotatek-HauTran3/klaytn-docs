@@ -135,73 +135,49 @@ TxType : SMART_CONTRACT_EXECUTION
 
 ---
  
-Import necessary utils from web3j
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
 ```java SmartContractExecutionExample.java focus=1:17
 
 ```
 ---
-Connect to network using web3j sdk
+Connect to the Klaytn blockchain using Web3j and specify the URL
 ```java SmartContractExecutionExample.java focus=29
 
 ```
 ---
-Load credentials from the private key
+Create KlayCredentials using the private key
 ```java SmartContractExecutionExample.java focus=30
 
 ```
 ---
-Define gas price and gas limit
+Define gas price and gas limit for the transaction
 ```java SmartContractExecutionExample.java focus=32:33
 
 ```
 
 ---
-Get the sender's address
+Get the sender's **address** and **nonce**
 
-```java SmartContractExecutionExample.java focus=34
-
-```
----
-Get the nonce for the sender's address
-
-```java SmartContractExecutionExample.java focus=35:36
+```java SmartContractExecutionExample.java focus=34:36
 
 ```
 ---
-Smart contract data
+Define the **contract data** that will be sent to blockchain
 
 ```java SmartContractExecutionExample.java focus=37
 
 ```
 ---
-Get the chain ID
+Get the chain ID from the **Klaytn** network
 
 ```java SmartContractExecutionExample.java focus=38:39
 
 ```
 ---
-Smart contract address to interact with
+Initialize variables for transaction parameters
 
-```java SmartContractExecutionExample.java focus=40
-
-```
----
-Convert data to byte array
-
-```java SmartContractExecutionExample.java focus=41
-
-```
----
-Set value to zero for smart contract execution
-
-```java SmartContractExecutionExample.java focus=43
-
-```
----
-Set the transaction type to SMART_CONTRACT_EXECUTION
-
-```java SmartContractExecutionExample.java focus=45
+```java SmartContractExecutionExample.java focus=40:45
 
 ```
 ---
@@ -211,19 +187,19 @@ Create a raw transaction
 
 ```
 ---
-Sign the transaction
+Sign the raw transaction
 
 ```java SmartContractExecutionExample.java focus=57:58
 
 ```
 ---
-Send the transaction to the Klaytn network
+Send the transaction to Klaytn network.
 
 ```java SmartContractExecutionExample.java focus=59:60
 
 ```
 ---
-Wait for the transaction receipt
+Get the transaction receipt 
 
 ```java SmartContractExecutionExample.java focus=61:68
 
@@ -235,12 +211,10 @@ Shutdown the Web3j instance
 
 ```
 ---
-Decode the transaction type
+Decode the raw transaction to get the transaction type
 
 ```java SmartContractExecutionExample.java focus=71:73
 
 ```
-
-
 
 </CH.Spotlight>

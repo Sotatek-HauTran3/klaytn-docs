@@ -148,9 +148,7 @@ Connect to the Klaytn blockchain using Web3j and specify the URL
 
 ```
 ---
-
 Create KlayCredentials using the private key
-
 
 ```java SmartContractDeployExample.java focus=29
 
@@ -158,15 +156,11 @@ Create KlayCredentials using the private key
 ---
 Define gas price and gas limit for the transaction
 
-
-
 ```java SmartContractDeployExample.java focus=31:32
 
 ```
 ---
 Get the sender's address and nonce
-
-
 
 ```java SmartContractDeployExample.java focus=33:35
 
@@ -174,14 +168,12 @@ Get the sender's address and nonce
 ---
 Define contract bytecode
 
-
-
 ```java SmartContractDeployExample.java focus=36
 
 ```
 ---
 
-Get the chain ID from the Klaytn network
+Get the chain ID from the **Klaytn** network
 
 
 ```java SmartContractDeployExample.java focus=37:38
@@ -189,8 +181,6 @@ Get the chain ID from the Klaytn network
 ```
 ---
 Initialize variables for transaction parameters
-
-
 
 ```java SmartContractDeployExample.java focus=39:44
 
@@ -206,7 +196,7 @@ Create a raw transaction
 
 ---
 
-Sign the raw transaction
+Sign the raw transaction using `KlayRawTransaction.createTransaction`
 
 
 ```java SmartContractDeployExample.java focus=57:58
@@ -214,7 +204,7 @@ Sign the raw transaction
 ```
 ---
 
-Send the transaction to Klaytn network.
+Send the transaction to Klaytn network
 
 
 ```java SmartContractDeployExample.java focus=59:60
