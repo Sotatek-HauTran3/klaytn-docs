@@ -100,33 +100,45 @@ output
 
 ---
 
-Import Web3j and related classes for blockchain interaction.
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
 ```java FeeDelegatedValueTransferMemo.java focus=1:19
 
 ```
 ---
 
-Create a Web3j instance connected to the BAOBAB testnet.
+Connect to the Klaytn blockchain using Web3j and specify the URL
 ```java FeeDelegatedValueTransferMemo.java focus=23
 
 ```
 ---
-Load Klaytn credentials from a sender's private key.
+Creating **sender** and **fee payer** credentials using private keys.
 
-```java FeeDelegatedValueTransferMemo.java focus=24
-
-```
----
-Load Klaytn credentials from a fee payer's private key.
-
-```java FeeDelegatedValueTransferMemo.java focus=25
+```java FeeDelegatedValueTransferMemo.java focus=24:25
 
 ```
 ---
-Declare transaction parameters
+Define gas price and gas limit for the transaction
 
-```java FeeDelegatedValueTransferMemo.java focus=27:40
+```java FeeDelegatedValueTransferMemo.java focus=27:28
+
+```
+---
+Get the sender's address from `credentials.getAddress()`
+
+```java FeeDelegatedValueTransferMemo.java focus=29
+
+```
+---
+Get the chain ID from the **Klaytn** network
+
+```java FeeDelegatedValueTransferMemo.java focus=30
+
+```
+---
+Initialize variables for transaction parameters
+
+```java FeeDelegatedValueTransferMemo.java focus=31:40
 
 ```
 ---
@@ -136,20 +148,20 @@ Create a raw transaction object.
 
 ```
 ---
-Sign the raw transaction as the sender.
+Signing the transaction as **sender** using `KlayTransactionEncoder.signMessage`. 
 
 ```java FeeDelegatedValueTransferMemo.java focus=51:52
 
 ```
 ---
-Sign the same message as the fee payer.
+Signing the transaction as fee payer using `KlayTransactionEncoder.signMessageAsFeePayer`. 
 
 ```java FeeDelegatedValueTransferMemo.java focus=54:55
 
 ```
 
 ---
-Send the signed transaction to the Klaytn node.
+Sending the signed transaction to Klaytn network
 <CH.Code>
 
 ```java FeeDelegatedValueTransferMemo.java focus=57:59
@@ -168,7 +180,7 @@ TxHash :
 </CH.Code>
 
 ---
-Retrieve and print the transaction receipt.
+Getting the transaction receipt
 <CH.Code>
 
 ```java FeeDelegatedValueTransferMemo.java focus=60:67
@@ -217,13 +229,13 @@ class TransactionReceipt {
 </CH.Code>
 
 ---
-Shutdown the Web3j instance.
+Shutting down the Web3j instance
 
 ```java FeeDelegatedValueTransferMemo.java focus=68
 
 ```
 ---
-Decode the raw transaction to get the transaction type.
+Decoding the raw transaction to get the transaction type
 <CH.Code>
 
 ```java FeeDelegatedValueTransferMemo.java focus=70:71

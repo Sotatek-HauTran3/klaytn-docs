@@ -98,43 +98,44 @@ output
 
 ---
 
-Import Web3j and related classes for blockchain interaction.
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 ```java ValueTransferMemo.java focus=1:17
 
 ```
 
 ---
-Create a Web3j instance connected to the BAOBAB testnet.
+Connect to the Klaytn blockchain using Web3j and specify the URL
+
 ```java ValueTransferMemo.java focus=29
 
 ```
 
 ---
-Load Klaytn credentials from a private key.
+Create KlayCredentials using the private key
 ```java ValueTransferMemo.java focus=30
 
 ```
 
 ---
-Define gas price and gas limit for the transaction.
+Define gas price and gas limit for the transaction
 ```java ValueTransferMemo.java focus=32:33
 
 ```
 
 ---
-Declare sender's address.
+Get the sender's address from `credentials.getAddress()`
 ```java ValueTransferMemo.java focus=34
 
 ```
 
 ---
-Get the chain ID from the connected Klaytn node.
+Get the chain ID from the **Klaytn** network
 ```java ValueTransferMemo.java focus=35:36
 
 ```
 
 ---
-Other parameters like recipent, nonce, value, data
+Initialize variables for transaction parameters
 ```java ValueTransferMemo.java focus=37:45
 
 ```
@@ -144,12 +145,12 @@ Create a raw transaction object.
 
 ```
 ---
-Sign the raw transaction with the sender's private key.
+Sign the raw transaction
 ```java ValueTransferMemo.java focus=57:58
 
 ```
 ---
-Send the signed transaction to the Klaytn node.
+Send the transaction to Klaytn network.
  <CH.Code>
 ```java ValueTransferMemo.java focus=59:60
 
@@ -168,7 +169,7 @@ TxHash :
 </CH.Code>
 
 ---
-Retrieve and print the transaction receipt.
+Get the transaction receipt 
 <CH.Code>
 ```java ValueTransferMemo.java focus=61:68
 
@@ -218,12 +219,12 @@ class TransactionReceipt {
 </CH.Code>
 
 ---
-Shutdown the Web3j instance.
+Shut down the Web3j connection
 ```java ValueTransferMemo.java focus=69
 
 ```
 ---
-Decode the raw transaction to get the transaction type.
+Decode the raw transaction to get the transaction type
 <CH.Code>
 ```java ValueTransferMemo.java focus=71:72
 
