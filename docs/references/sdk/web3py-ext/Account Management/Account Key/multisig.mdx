@@ -205,14 +205,9 @@ Merge **additional fields** like **sender** and **keys** into the empty tx by us
 
 ```
 ---
-In this case, the account key to update is the **mutisig** key and each role has **weight** equal 1.
+In this case, the account keys to update is the **mutisig** key and each key inside contains a compressed public key and its weight. The **compressed_key** util will extract the compressed public key from the key
 
-```py web3_account_update_multisig.py focus=34,38,42
-
-```
----
-You can use the **compressed_key** util to set each key. It will extract the compressed public key from the key
-```py web3_account_update_multisig.py focus=35,39,43
+```py web3_account_update_multisig.py focus=34:35,38:39,42:43
 
 ```
 ---
