@@ -1,0 +1,342 @@
+# Role-based Account Key
+
+**AccountKeyRoleBased** represents a role-based key. If an account has an **AccountKeyRoleBased** object and the transaction type is one **except account update**, the validation process is done according to each roles like below:
+
+<CH.Spotlight>
+<CH.Code>
+
+```java AccountUpdateWithRoleBasedExample.java
+package org.web3j.example.accountKey;
+
+import org.web3j.tx.response.PollingTransactionReceiptProcessor;
+import org.web3j.tx.response.TransactionReceiptProcessor;
+import org.web3j.example.keySample;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.List;
+
+import org.web3j.crypto.KlayCredentials;
+import org.web3j.crypto.KlayRawTransaction;
+import org.web3j.crypto.KlayTransactionEncoder;
+import org.web3j.crypto.transaction.account.AccountKey;
+import org.web3j.crypto.transaction.account.AccountKeyPublic;
+import org.web3j.crypto.transaction.account.AccountKeyRoleBased;
+import org.web3j.crypto.transaction.account.AccountKeyWeightedMultiSig;
+import org.web3j.crypto.transaction.account.AccountKeyWeightedMultiSig.WeightedPublicKey;
+import org.web3j.crypto.transaction.type.TxType;
+import org.web3j.crypto.transaction.type.TxTypeAccountUpdate;
+import org.web3j.crypto.transaction.type.TxType.Type;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthChainId;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.klaytn.Web3j;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.utils.Numeric;
+import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
+
+public class AccountUpdateWithRoleBasedExample {
+
+        public static void run(KlayCredentials credentials) throws Exception {
+
+                Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
+                KlayCredentials new_credentials1 = KlayCredentials.create(keySample.MULTI_KEY_privkey1);
+                KlayCredentials new_credentials2 = KlayCredentials.create(keySample.MULTI_KEY_privkey2);
+                KlayCredentials new_credentials3 = KlayCredentials.create(keySample.MULTI_KEY_privkey3);
+
+                BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
+                BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
+                String from = credentials.getAddress();
+                EthChainId EthchainId = web3j.ethChainId().send();
+                long chainId = EthchainId.getChainId().longValue();
+                BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
+                                .getTransactionCount();
+
+                BigInteger newPubkey1 = new_credentials1.getEcKeyPair().getPublicKey();
+                WeightedPublicKey weightedAccountKey1 = WeightedPublicKey.create(BigInteger.ONE,
+                                AccountKeyPublic.create(newPubkey1));
+                BigInteger newPubkey2 = new_credentials2.getEcKeyPair().getPublicKey();
+                WeightedPublicKey weightedAccountKey2 = WeightedPublicKey.create(BigInteger.ONE,
+                                AccountKeyPublic.create(newPubkey2));
+                BigInteger newPubkey3 = new_credentials3.getEcKeyPair().getPublicKey();
+                WeightedPublicKey weightedAccountKey3 = WeightedPublicKey.create(BigInteger.ONE,
+                                AccountKeyPublic.create(newPubkey3));
+
+                // make list with weightedAccountKey1, weightedAccountKey2, weightedAccountKey3
+                List<WeightedPublicKey> weightedAccountKeyList = List.of(weightedAccountKey1, weightedAccountKey2,
+                                weightedAccountKey3);
+
+                AccountKeyWeightedMultiSig accountTransactionkey = AccountKeyWeightedMultiSig.create(BigInteger.TWO,
+                                weightedAccountKeyList);
+                AccountKeyPublic accountUpdateKey = AccountKeyPublic.create(newPubkey1);
+                AccountKeyPublic accountFeePayerKey = AccountKeyPublic.create(newPubkey1);
+
+                List<AccountKey> accountKeys = List.of(accountTransactionkey, accountUpdateKey, accountFeePayerKey);
+
+                AccountKeyRoleBased accountkey = AccountKeyRoleBased.create(accountKeys);
+
+                TxType.Type type = Type.ACCOUNT_UPDATE;
+
+                KlayRawTransaction raw = KlayRawTransaction.createTransaction(
+                                type,
+                                nonce,
+                                GAS_PRICE,
+                                GAS_LIMIT,
+                                from,
+                                accountkey);
+
+                byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials);
+                String hexValue = Numeric.toHexString(signedMessage);
+                EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
+                System.out.println("TxHash : \n " + transactionResponse.getResult());
+                String txHash = transactionResponse.getResult();
+
+                int DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH = 40;
+                int DEFAULT_BLOCK_TIME = 1 * 1000;
+                long DEFAULT_POLLING_FREQUENCY = DEFAULT_BLOCK_TIME;
+                TransactionReceiptProcessor transactionReceiptProcessor = new PollingTransactionReceiptProcessor(web3j,
+                                DEFAULT_POLLING_FREQUENCY, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH);
+                org.web3j.protocol.core.methods.response.TransactionReceipt ethReceipt = transactionReceiptProcessor
+                                .waitForTransactionReceipt(txHash);
+                System.out.println("Receipt from eth_getTransactionReceipt : \n" + ethReceipt);
+                TransactionReceipt receipt = web3j.klayGetTransactionReceipt(txHash).send().getResult();
+                System.out.println("Receipt from klay_getTransactionReceipt : \n" + receipt);
+                web3j.shutdown();
+
+                TxTypeAccountUpdate rawTransaction = TxTypeAccountUpdate.decodeFromRawTransaction(signedMessage);
+
+                System.out.println("TxType : " + rawTransaction.getKlayType());
+
+        }
+
+}
+```
+---
+```zsh output
+❯ java AccountUpdateWithRoleBasedExample.java
+
+```
+</CH.Code>
+
+
+---
+Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
+
+
+```java AccountUpdateWithRoleBasedExample.java focus=1:27
+
+```
+---
+
+Create a Web3j instance with the specified BAOBAB_URL
+
+
+```java AccountUpdateWithRoleBasedExample.java focus=33
+
+```
+---
+
+Also, you can change the default provider. For example, using the alchemy provider.
+
+```java AccountUpdateWithRoleBasedExample.java focus=33
+package org.web3j.example.accountKey;
+
+import org.web3j.tx.response.PollingTransactionReceiptProcessor;
+import org.web3j.tx.response.TransactionReceiptProcessor;
+import org.web3j.example.keySample;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.List;
+
+import org.web3j.crypto.KlayCredentials;
+import org.web3j.crypto.KlayRawTransaction;
+import org.web3j.crypto.KlayTransactionEncoder;
+import org.web3j.crypto.transaction.account.AccountKey;
+import org.web3j.crypto.transaction.account.AccountKeyPublic;
+import org.web3j.crypto.transaction.account.AccountKeyRoleBased;
+import org.web3j.crypto.transaction.account.AccountKeyWeightedMultiSig;
+import org.web3j.crypto.transaction.account.AccountKeyWeightedMultiSig.WeightedPublicKey;
+import org.web3j.crypto.transaction.type.TxType;
+import org.web3j.crypto.transaction.type.TxTypeAccountUpdate;
+import org.web3j.crypto.transaction.type.TxType.Type;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthChainId;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.klaytn.Web3j;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.utils.Numeric;
+import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
+
+public class AccountUpdateWithRoleBasedExample {
+
+        public static void run(KlayCredentials credentials) throws Exception {
+
+                Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
+                KlayCredentials new_credentials1 = KlayCredentials.create(keySample.MULTI_KEY_privkey1);
+                KlayCredentials new_credentials2 = KlayCredentials.create(keySample.MULTI_KEY_privkey2);
+                KlayCredentials new_credentials3 = KlayCredentials.create(keySample.MULTI_KEY_privkey3);
+
+                BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
+                BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
+                String from = credentials.getAddress();
+                EthChainId EthchainId = web3j.ethChainId().send();
+                long chainId = EthchainId.getChainId().longValue();
+                BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
+                                .getTransactionCount();
+
+                BigInteger newPubkey1 = new_credentials1.getEcKeyPair().getPublicKey();
+                WeightedPublicKey weightedAccountKey1 = WeightedPublicKey.create(BigInteger.ONE,
+                                AccountKeyPublic.create(newPubkey1));
+                BigInteger newPubkey2 = new_credentials2.getEcKeyPair().getPublicKey();
+                WeightedPublicKey weightedAccountKey2 = WeightedPublicKey.create(BigInteger.ONE,
+                                AccountKeyPublic.create(newPubkey2));
+                BigInteger newPubkey3 = new_credentials3.getEcKeyPair().getPublicKey();
+                WeightedPublicKey weightedAccountKey3 = WeightedPublicKey.create(BigInteger.ONE,
+                                AccountKeyPublic.create(newPubkey3));
+
+                // make list with weightedAccountKey1, weightedAccountKey2, weightedAccountKey3
+                List<WeightedPublicKey> weightedAccountKeyList = List.of(weightedAccountKey1, weightedAccountKey2,
+                                weightedAccountKey3);
+
+                AccountKeyWeightedMultiSig accountTransactionkey = AccountKeyWeightedMultiSig.create(BigInteger.TWO,
+                                weightedAccountKeyList);
+                AccountKeyPublic accountUpdateKey = AccountKeyPublic.create(newPubkey1);
+                AccountKeyPublic accountFeePayerKey = AccountKeyPublic.create(newPubkey1);
+
+                List<AccountKey> accountKeys = List.of(accountTransactionkey, accountUpdateKey, accountFeePayerKey);
+
+                AccountKeyRoleBased accountkey = AccountKeyRoleBased.create(accountKeys);
+
+                TxType.Type type = Type.ACCOUNT_UPDATE;
+
+                KlayRawTransaction raw = KlayRawTransaction.createTransaction(
+                                type,
+                                nonce,
+                                GAS_PRICE,
+                                GAS_LIMIT,
+                                from,
+                                accountkey);
+
+                byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials);
+                String hexValue = Numeric.toHexString(signedMessage);
+                EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
+                System.out.println("TxHash : \n " + transactionResponse.getResult());
+                String txHash = transactionResponse.getResult();
+
+                int DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH = 40;
+                int DEFAULT_BLOCK_TIME = 1 * 1000;
+                long DEFAULT_POLLING_FREQUENCY = DEFAULT_BLOCK_TIME;
+                TransactionReceiptProcessor transactionReceiptProcessor = new PollingTransactionReceiptProcessor(web3j,
+                                DEFAULT_POLLING_FREQUENCY, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH);
+                org.web3j.protocol.core.methods.response.TransactionReceipt ethReceipt = transactionReceiptProcessor
+                                .waitForTransactionReceipt(txHash);
+                System.out.println("Receipt from eth_getTransactionReceipt : \n" + ethReceipt);
+                TransactionReceipt receipt = web3j.klayGetTransactionReceipt(txHash).send().getResult();
+                System.out.println("Receipt from klay_getTransactionReceipt : \n" + receipt);
+                web3j.shutdown();
+
+                TxTypeAccountUpdate rawTransaction = TxTypeAccountUpdate.decodeFromRawTransaction(signedMessage);
+
+                System.out.println("TxType : " + rawTransaction.getKlayType());
+
+        }
+
+}
+```
+---
+Create 3 diffent **credentials** from private keys
+
+```java AccountUpdateWithRoleBasedExample.java focus=34:36
+
+```
+---
+Gas price and gas limit settings
+
+```java AccountUpdateWithRoleBasedExample.java focus=38:39
+
+```
+---
+
+Get chain ID from the network
+
+
+```java AccountUpdateWithRoleBasedExample.java focus=41:42
+
+```
+---
+
+Get the nonce for the sender's address
+
+
+```java AccountUpdateWithRoleBasedExample.java focus=43:44
+
+```
+---
+Generate **new account keys** and theirs **weight** for account update
+
+```java AccountUpdateWithRoleBasedExample.java focus=46:54
+
+```
+---
+Combine generated **weight account keys** into a list
+
+```java AccountUpdateWithRoleBasedExample.java focus=56:58
+
+```
+---
+Specify the **role** for each key, the possible role are transaction, update, fee payer.
+
+```java AccountUpdateWithRoleBasedExample.java focus=60:63
+
+```
+---
+Combine **generated role key** into a list
+
+```java AccountUpdateWithRoleBasedExample.java focus=65:67
+
+```
+---
+Set transaction type as **ACCOUNT_UPDATE**
+```java AccountUpdateWithRoleBasedExample.java focus=69
+
+```
+---
+
+Create a raw transaction for account update
+
+```java AccountUpdateWithRoleBasedExample.java focus=71:77
+
+```
+---
+Sign the transaction
+
+```java AccountUpdateWithRoleBasedExample.java focus=79
+
+```
+---
+Send the signed transaction to Klaytn network
+
+```java AccountUpdateWithRoleBasedExample.java focus=80:83
+
+```
+
+---
+Wait for the transaction to be completed and get the transaction receipt
+
+```java AccountUpdateWithRoleBasedExample.java focus=85:94
+
+```
+---
+Shut down the Web3j instance
+
+
+```java AccountUpdateWithRoleBasedExample.java focus=95
+
+```
+---
+Decode the raw transaction to get the transaction type
+
+```java AccountUpdateWithRoleBasedExample.java focus=97:99
+
+```
+
+</CH.Spotlight>

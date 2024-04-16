@@ -5,8 +5,11 @@
 <CH.Code>
 
 ```java FeeDelegatedSmartContractExecutionExample.java
-package org.web3j.example;
+package org.web3j.example.transactions;
 
+import org.web3j.tx.response.PollingTransactionReceiptProcessor;
+import org.web3j.tx.response.TransactionReceiptProcessor;
+import org.web3j.example.keySample;
 import java.io.IOException;
 import java.math.BigInteger;
 import org.web3j.crypto.KlayCredentials;
@@ -30,7 +33,7 @@ public class FeeDelegatedSmartContractExecutionExample implements keySample {
         /**
          * 
          */
-        public static void run() throws IOException {
+        public static void run() throws Exception {
 
                 Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
                 KlayCredentials credentials = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
@@ -71,13 +74,16 @@ public class FeeDelegatedSmartContractExecutionExample implements keySample {
                 EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
                 System.out.println("TxHash : \n " + transactionResponse.getResult());
                 String txHash = transactionResponse.getResult();
-                try {
-                        Thread.sleep(2000);
-                } catch (Exception e) {
-                        System.out.println(e);
-                }
+                int DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH = 40;
+                int DEFAULT_BLOCK_TIME = 1 * 1000;
+                long DEFAULT_POLLING_FREQUENCY = DEFAULT_BLOCK_TIME;
+                TransactionReceiptProcessor transactionReceiptProcessor = new PollingTransactionReceiptProcessor(web3j,
+                                DEFAULT_POLLING_FREQUENCY, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH);
+                org.web3j.protocol.core.methods.response.TransactionReceipt ethReceipt = transactionReceiptProcessor
+                                .waitForTransactionReceipt(txHash);
+                System.out.println("Receipt from eth_getTransactionReceipt : \n" + ethReceipt);
                 TransactionReceipt receipt = web3j.klayGetTransactionReceipt(txHash).send().getResult();
-                System.out.println("receipt : \n" + receipt);
+                System.out.println("Receipt from klay_getTransactionReceipt : \n" + receipt);
                 web3j.shutdown();
 
                 TxTypeFeeDelegatedSmartContractExecution rawTransaction = TxTypeFeeDelegatedSmartContractExecution
@@ -137,29 +143,26 @@ TxType : FEE_DELEGATED_SMART_CONTRACT_EXECUTION
 
 
 
-
-
 ---
- 
 Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
-```java FeeDelegatedSmartContractExecutionExample.java focus=1:17
+```java FeeDelegatedSmartContractExecutionExample.java focus=1:20
 
 ```
 ---
 Connect to the Klaytn blockchain using Web3j and specify the URL
-```java FeeDelegatedSmartContractExecutionExample.java focus=28
+```java FeeDelegatedSmartContractExecutionExample.java focus=31
 
 ```
 ---
 Creating **sender** and **fee payer** credentials using private keys.
-```java FeeDelegatedSmartContractExecutionExample.java focus=29:30
+```java FeeDelegatedSmartContractExecutionExample.java focus=32:33
 
 ```
 ---
 Define gas price and gas limit for the transaction
 
-```java FeeDelegatedSmartContractExecutionExample.java focus=32:33
+```java FeeDelegatedSmartContractExecutionExample.java focus=35:36
 
 ```
 
@@ -167,14 +170,14 @@ Define gas price and gas limit for the transaction
 Get the sender's address from `credentials.getAddress()`
 
 
-```java FeeDelegatedSmartContractExecutionExample.java focus=34
+```java FeeDelegatedSmartContractExecutionExample.java focus=37
 
 ```
 ---
 Getting the **nonce** for the sender's address
 
 
-```java FeeDelegatedSmartContractExecutionExample.java focus=35:36
+```java FeeDelegatedSmartContractExecutionExample.java focus=38:39
 
 ```
 
@@ -182,38 +185,34 @@ Getting the **nonce** for the sender's address
 Define smart contract data
 
 
-```java FeeDelegatedSmartContractExecutionExample.java focus=37
+```java FeeDelegatedSmartContractExecutionExample.java focus=40
 
 ```
 
 ---
 Get the chain ID from the **Klaytn** network
 
-
-```java FeeDelegatedSmartContractExecutionExample.java focus=39
+```java FeeDelegatedSmartContractExecutionExample.java focus=41:42
 
 ```
 
 ---
-
 Initialize variables for transaction parameters
 
-```java FeeDelegatedSmartContractExecutionExample.java focus=40:45
+```java FeeDelegatedSmartContractExecutionExample.java focus=43:48
 
 ```
-
 ---
 Create a raw transaction
 
-
-```java FeeDelegatedSmartContractExecutionExample.java focus=47:55
+```java FeeDelegatedSmartContractExecutionExample.java focus=50:58
 
 ```
 
 ---
 Signing the transaction as **sender** using `KlayTransactionEncoder.signMessage`. 
 
-```java FeeDelegatedSmartContractExecutionExample.java focus=57:58
+```java FeeDelegatedSmartContractExecutionExample.java focus=60:61
 
 ```
 
@@ -221,7 +220,7 @@ Signing the transaction as **sender** using `KlayTransactionEncoder.signMessage`
 
 Signing the transaction as fee payer using `KlayTransactionEncoder.signMessageAsFeePayer`. 
 
-```java FeeDelegatedSmartContractExecutionExample.java focus=60:62
+```java FeeDelegatedSmartContractExecutionExample.java focus=63:64
 
 ```
 
@@ -229,7 +228,7 @@ Signing the transaction as fee payer using `KlayTransactionEncoder.signMessageAs
 Sending the signed transaction to Klaytn network
 
 
-```java FeeDelegatedSmartContractExecutionExample.java focus=63:65
+```java FeeDelegatedSmartContractExecutionExample.java focus=66:69
 
 ```
 
@@ -237,7 +236,7 @@ Sending the signed transaction to Klaytn network
 Getting the transaction receipt
 
 
-```java FeeDelegatedSmartContractExecutionExample.java focus=66:73
+```java FeeDelegatedSmartContractExecutionExample.java focus=70:79
 
 ```
 
@@ -246,7 +245,7 @@ Getting the transaction receipt
 Shutting down the Web3j instance
 
 
-```java FeeDelegatedSmartContractExecutionExample.java focus=74
+```java FeeDelegatedSmartContractExecutionExample.java focus=80
 
 ```
 
@@ -254,7 +253,7 @@ Shutting down the Web3j instance
 Decoding the raw transaction to get the transaction type
 
 
-```java FeeDelegatedSmartContractExecutionExample.java focus=76:78
+```java FeeDelegatedSmartContractExecutionExample.java focus=82:84
 
 ```
 

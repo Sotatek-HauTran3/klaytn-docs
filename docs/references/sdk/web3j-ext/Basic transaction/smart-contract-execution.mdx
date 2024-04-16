@@ -5,7 +5,7 @@
 <CH.Code>
 
 ```java SmartContractExecutionExample.java
-package org.web3j.example;
+package org.web3j.example.transactions;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -22,6 +22,9 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.protocol.klaytn.Web3j;
 import org.web3j.utils.Numeric;
 import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
+import org.web3j.tx.response.PollingTransactionReceiptProcessor;
+import org.web3j.tx.response.TransactionReceiptProcessor;
+import org.web3j.example.keySample;
 
 /**
  * 
@@ -31,7 +34,7 @@ public class SmartContractExecutionExample implements keySample {
          * 
          */
 
-        public static void run() throws IOException {
+        public static void run() throws Exception {
 
                 Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
                 KlayCredentials credentials = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
@@ -66,13 +69,16 @@ public class SmartContractExecutionExample implements keySample {
                 EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
                 System.out.println("TxHash : \n " + transactionResponse.getResult());
                 String txHash = transactionResponse.getResult();
-                try {
-                        Thread.sleep(2000);
-                } catch (Exception e) {
-                        System.out.println(e);
-                }
+                int DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH = 40;
+                int DEFAULT_BLOCK_TIME = 1 * 1000;
+                long DEFAULT_POLLING_FREQUENCY = DEFAULT_BLOCK_TIME;
+                TransactionReceiptProcessor transactionReceiptProcessor = new PollingTransactionReceiptProcessor(web3j,
+                                DEFAULT_POLLING_FREQUENCY, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH);
+                org.web3j.protocol.core.methods.response.TransactionReceipt ethReceipt = transactionReceiptProcessor
+                                .waitForTransactionReceipt(txHash);
+                System.out.println("Receipt from eth_getTransactionReceipt : \n" + ethReceipt);
                 TransactionReceipt receipt = web3j.klayGetTransactionReceipt(txHash).send().getResult();
-                System.out.println("receipt : \n" + receipt);
+                System.out.println("Receipt from klay_getTransactionReceipt : \n" + receipt);
                 web3j.shutdown();
 
                 TxTypeSmartContractExecution rawTransaction = TxTypeSmartContractExecution
@@ -82,11 +88,7 @@ public class SmartContractExecutionExample implements keySample {
         }
 
 }
-
 ```
-
-
-
 
 ---
 ```zsh output
@@ -128,92 +130,87 @@ TxType : SMART_CONTRACT_EXECUTION
 ```
 </CH.Code>
 
-
-
-
-
-
 ---
  
 Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
-```java SmartContractExecutionExample.java focus=1:17
+```java SmartContractExecutionExample.java focus=1:20
 
 ```
 ---
 Connect to the Klaytn blockchain using Web3j and specify the URL
-```java SmartContractExecutionExample.java focus=29
+```java SmartContractExecutionExample.java focus=32
 
 ```
 ---
 Create KlayCredentials using the private key
-```java SmartContractExecutionExample.java focus=30
+```java SmartContractExecutionExample.java focus=33
 
 ```
 ---
 Define gas price and gas limit for the transaction
-```java SmartContractExecutionExample.java focus=32:33
+```java SmartContractExecutionExample.java focus=35:36
 
 ```
 
 ---
 Get the sender's **address** and **nonce**
 
-```java SmartContractExecutionExample.java focus=34:36
+```java SmartContractExecutionExample.java focus=37:39
 
 ```
 ---
 Define the **contract data** that will be sent to blockchain
 
-```java SmartContractExecutionExample.java focus=37
+```java SmartContractExecutionExample.java focus=40
 
 ```
 ---
 Get the chain ID from the **Klaytn** network
 
-```java SmartContractExecutionExample.java focus=38:39
+```java SmartContractExecutionExample.java focus=41:42
 
 ```
 ---
 Initialize variables for transaction parameters
 
-```java SmartContractExecutionExample.java focus=40:45
+```java SmartContractExecutionExample.java focus=43:48
 
 ```
 ---
 Create a raw transaction
 
-```java SmartContractExecutionExample.java focus=47:55
+```java SmartContractExecutionExample.java focus=50:58
 
 ```
 ---
 Sign the raw transaction
 
-```java SmartContractExecutionExample.java focus=57:58
+```java SmartContractExecutionExample.java focus=60
 
 ```
 ---
 Send the transaction to Klaytn network.
 
-```java SmartContractExecutionExample.java focus=59:60
+```java SmartContractExecutionExample.java focus=61:64
 
 ```
 ---
 Get the transaction receipt 
 
-```java SmartContractExecutionExample.java focus=61:68
+```java SmartContractExecutionExample.java focus=65:74
 
 ```
 ---
 Shutdown the Web3j instance
 
-```java SmartContractExecutionExample.java focus=69
+```java SmartContractExecutionExample.java focus=75
 
 ```
 ---
 Decode the raw transaction to get the transaction type
 
-```java SmartContractExecutionExample.java focus=71:73
+```java SmartContractExecutionExample.java focus=77:79
 
 ```
 

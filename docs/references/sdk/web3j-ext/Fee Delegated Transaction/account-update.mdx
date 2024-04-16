@@ -8,8 +8,11 @@
 <CH.Code>
 
 ```java FeeDelegatedAccountUpdateExample.java
-package org.web3j.example;
+package org.web3j.example.transactions;
 
+import org.web3j.tx.response.PollingTransactionReceiptProcessor;
+import org.web3j.tx.response.TransactionReceiptProcessor;
+import org.web3j.example.keySample;
 import java.io.IOException;
 import java.math.BigInteger;
 import org.web3j.crypto.KlayCredentials;
@@ -32,7 +35,7 @@ import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
  */
 public class FeeDelegatedAccountUpdateExample implements keySample {
 
-        public static void run(KlayCredentials credentials) throws IOException {
+        public static void run(KlayCredentials credentials) throws Exception {
 
                 Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
                 KlayCredentials new_credentials = KlayCredentials.create(PUBLIC_KEY_privkey, PUBLIC_KEY_address);
@@ -69,13 +72,16 @@ public class FeeDelegatedAccountUpdateExample implements keySample {
                 EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
                 System.out.println("TxHash : \n " + transactionResponse.getResult());
                 String txHash = transactionResponse.getResult();
-                try {
-                        Thread.sleep(2000);
-                } catch (Exception e) {
-                        System.out.println(e);
-                }
+                int DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH = 40;
+                int DEFAULT_BLOCK_TIME = 1 * 1000;
+                long DEFAULT_POLLING_FREQUENCY = DEFAULT_BLOCK_TIME;
+                TransactionReceiptProcessor transactionReceiptProcessor = new PollingTransactionReceiptProcessor(web3j,
+                                DEFAULT_POLLING_FREQUENCY, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH);
+                org.web3j.protocol.core.methods.response.TransactionReceipt ethReceipt = transactionReceiptProcessor
+                                .waitForTransactionReceipt(txHash);
+                System.out.println("Receipt from eth_getTransactionReceipt : \n" + ethReceipt);
                 TransactionReceipt receipt = web3j.klayGetTransactionReceipt(txHash).send().getResult();
-                System.out.println("receipt : \n" + receipt);
+                System.out.println("Receipt from klay_getTransactionReceipt : \n" + receipt);
                 web3j.shutdown();
 
                 TxTypeFeeDelegatedAccountUpdate rawTransaction = TxTypeFeeDelegatedAccountUpdate
@@ -85,12 +91,7 @@ public class FeeDelegatedAccountUpdateExample implements keySample {
         }
 
 }
-
-
 ```
-
-
-
 
 ---
 ```zsh output
@@ -136,96 +137,77 @@ TxType : FEE_DELEGATED_ACCOUNT_UPDATE
 ```
 </CH.Code>
 
-
-
-
-
-
 ---
 Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
 
-
-```java FeeDelegatedAccountUpdateExample.java focus=1:18
+```java FeeDelegatedAccountUpdateExample.java focus=1:21
 
 ```
-
-
 ---
 Connect to the Klaytn blockchain using Web3j and specify the URL
 
-
-
-```java FeeDelegatedAccountUpdateExample.java focus=27
+```java FeeDelegatedAccountUpdateExample.java focus=30
 
 ```
 ---
 Creating **sender** and **fee payer** credentials using private keys.
 
 
-```java FeeDelegatedAccountUpdateExample.java focus=28:29
+```java FeeDelegatedAccountUpdateExample.java focus=31:32
 
 ```
 
 
 ---
-
 Define gas price and gas limit for the transaction
 
 
-```java FeeDelegatedAccountUpdateExample.java focus=30:31
+```java FeeDelegatedAccountUpdateExample.java focus=33:34
 
 ```
 ---
 Get the sender's address from `credentials.getAddress()`
-```java FeeDelegatedAccountUpdateExample.java focus=32
+```java FeeDelegatedAccountUpdateExample.java focus=35
 
 ```
 
 ---
 Get the chain ID from the **Klaytn** network
 
-```java FeeDelegatedAccountUpdateExample.java focus=33:34
+```java FeeDelegatedAccountUpdateExample.java focus=36:37
 
 ```
-
 
 ---
 Getting the **nonce** for the sender's address
 
-
-
-```java FeeDelegatedAccountUpdateExample.java focus=35:36
+```java FeeDelegatedAccountUpdateExample.java focus=38:39
 
 ```
 
-
 ---
-
 Generating a new account key for account update
 
 
-```java FeeDelegatedAccountUpdateExample.java focus=38
+```java FeeDelegatedAccountUpdateExample.java focus=41
 
 ```
 
-
 ---
-
 Creating a raw transaction for account update
 
 
-```java FeeDelegatedAccountUpdateExample.java focus=44
+```java FeeDelegatedAccountUpdateExample.java focus=47:53
 
 ```
 
 
 ---
-
 Signing the transaction as **sender** using `KlayTransactionEncoder.signMessage`. 
 
 
-```java FeeDelegatedAccountUpdateExample.java focus=52:53
+```java FeeDelegatedAccountUpdateExample.java focus=55:56
 
 ```
 
@@ -234,44 +216,37 @@ Signing the transaction as **sender** using `KlayTransactionEncoder.signMessage`
 Signing the transaction as fee payer using `KlayTransactionEncoder.signMessageAsFeePayer`. 
 
 
-```java FeeDelegatedAccountUpdateExample.java focus=55:56
+```java FeeDelegatedAccountUpdateExample.java focus=58:59
 
 ```
 ---
 Sending the signed transaction to Klaytn network
 
-```java FeeDelegatedAccountUpdateExample.java focus=58:60
+```java FeeDelegatedAccountUpdateExample.java focus=61:64
 
 ```
 
-
 ---
-
 Getting the transaction receipt
 
 
-```java FeeDelegatedAccountUpdateExample.java focus=61:68
+```java FeeDelegatedAccountUpdateExample.java focus=65:74
 
 ```
 
 ---
-
 Shutting down the Web3j instance
 
 
-```java FeeDelegatedAccountUpdateExample.java focus=69
+```java FeeDelegatedAccountUpdateExample.java focus=75
 
 ```
 ---
 Decoding the raw transaction to get the transaction type
 
-
-
-```java FeeDelegatedAccountUpdateExample.java focus=70:74
+```java FeeDelegatedAccountUpdateExample.java focus=77:80
 
 ```
-
-
 
 
 </CH.Spotlight>
