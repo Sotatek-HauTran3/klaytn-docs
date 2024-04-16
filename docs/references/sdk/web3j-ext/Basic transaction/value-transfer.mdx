@@ -6,7 +6,7 @@ TxTypeValueTransfer is used when a user wants to send KLAY.
 <CH.Code>
 
 ```java txTypeValueTransferTransaction.java
-package org.web3j.example;
+package org.web3j.example.transactions;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -23,6 +23,9 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.protocol.klaytn.Web3j;
 import org.web3j.utils.Numeric;
 import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
+import org.web3j.tx.response.PollingTransactionReceiptProcessor;
+import org.web3j.tx.response.TransactionReceiptProcessor;
+import org.web3j.example.keySample;
 
 /**
  * 
@@ -32,7 +35,7 @@ public class ValueTransferExample implements keySample {
      * 
      */
 
-    public static void run() throws IOException {
+    public static void run() throws Exception {
         Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
         KlayCredentials credentials = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
 
@@ -62,13 +65,17 @@ public class ValueTransferExample implements keySample {
         EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
         System.out.println("TxHash : \n " + transactionResponse.getResult());
         String txHash = transactionResponse.getResult();
-        try {
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+
+        int DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH = 40;
+        int DEFAULT_BLOCK_TIME = 1 * 1000;
+        long DEFAULT_POLLING_FREQUENCY = DEFAULT_BLOCK_TIME;
+        TransactionReceiptProcessor transactionReceiptProcessor = new PollingTransactionReceiptProcessor(web3j,
+                DEFAULT_POLLING_FREQUENCY, DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH);
+        org.web3j.protocol.core.methods.response.TransactionReceipt ethReceipt = transactionReceiptProcessor
+                .waitForTransactionReceipt(txHash);
+        System.out.println("Receipt from eth_getTransactionReceipt : \n" + ethReceipt);
         TransactionReceipt receipt = web3j.klayGetTransactionReceipt(txHash).send().getResult();
-        System.out.println("receipt : \n" + receipt);
+        System.out.println("Receipt from klay_getTransactionReceipt : \n" + receipt);
         web3j.shutdown();
 
         TxTypeValueTransfer rawTransaction = TxTypeValueTransfer.decodeFromRawTransaction(signedMessage);
@@ -119,71 +126,65 @@ TxType : VALUE_TRANSFER
 
 ---
 Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
-```java txTypeValueTransferTransaction.java focus=1:17
+```java txTypeValueTransferTransaction.java focus=1:20
 
 ```
 
-
-
 ---
 Connect to the Klaytn blockchain using Web3j and specify the URL
-```java txTypeValueTransferTransaction.java focus=28:28
+```java txTypeValueTransferTransaction.java focus=31
 
 ```
 ---
 Create KlayCredentials using the private key
-```java txTypeValueTransferTransaction.java focus=29:29
+```java txTypeValueTransferTransaction.java focus=32
 
 ```
 
 ---
 Define gas price and gas limit for the transaction
 
-```java txTypeValueTransferTransaction.java focus=31:32
+```java txTypeValueTransferTransaction.java focus=34:35
 
 ```
 ---
 Get the sender's address from `credentials.getAddress()`
 
-```java txTypeValueTransferTransaction.java focus=33
+```java txTypeValueTransferTransaction.java focus=36
 
 ```
 ---
 Get the chain ID from the **Klaytn** network
 
-```java txTypeValueTransferTransaction.java focus=34
+```java txTypeValueTransferTransaction.java focus=37:38
 
 ```
 ---
 Initialize variables for transaction parameters
 
-```java txTypeValueTransferTransaction.java focus=35:41
+```java txTypeValueTransferTransaction.java focus=39:44
 
 ```
 ---
 Create a raw transaction object using above parameters
-```java txTypeValueTransferTransaction.java focus=43:50
+```java txTypeValueTransferTransaction.java focus=46:53
 
 ```
 ---
-
 Sign the raw transaction
 
-```java txTypeValueTransferTransaction.java focus=52
+```java txTypeValueTransferTransaction.java focus=55
 
 ```
 ---
-
 Send the transaction to Klaytn network.
 
 <CH.Code>
 
-```java txTypeValueTransferTransaction.java focus=53:55
+```java txTypeValueTransferTransaction.java focus=56:59
 
 ```
-
 ---
-
 ```zsh output
 ❯ node TxTypeFeeDelegatedValueTransfer.js
 0x78a87f014fd4f7a2fb606c3b133c1d3e8bf9b100e3b28f10b71ac440ec3f4da4
@@ -196,13 +197,11 @@ Get the transaction receipt
 
 <CH.Code>
 
-```java txTypeValueTransferTransaction.java focus=56:63
+```java txTypeValueTransferTransaction.java focus=61:70
 
 ```
 
-
 ---
-
 ```zsh output
 ❯ java txTypeValueTransferTransaction.java
 class TransactionReceipt {
@@ -243,16 +242,15 @@ class TransactionReceipt {
 ---
 Shut down the Web3j connection
 
-```java txTypeValueTransferTransaction.java focus=64
+```java txTypeValueTransferTransaction.java focus=71
 
 ```
 ---
 Decode the raw transaction to get the transaction type
 <CH.Code>
-```java txTypeValueTransferTransaction.java focus=66:67
+```java txTypeValueTransferTransaction.java focus=73:74
 
 ```
-
 
 ---
 

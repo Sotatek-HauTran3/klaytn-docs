@@ -6,16 +6,19 @@
 <CH.Code>
 
 ```java FeeDelegatedValueTransferMemo.java
+package org.web3j.example.transactions;
 
-package org.web3j.example;
-
+import org.web3j.tx.response.PollingTransactionReceiptProcessor;
+import org.web3j.tx.response.TransactionReceiptProcessor;
+import org.web3j.example.keySample;
 import java.io.IOException;
 import java.math.BigInteger;
+
 import org.web3j.crypto.KlayCredentials;
 import org.web3j.crypto.KlayRawTransaction;
 import org.web3j.crypto.KlayTransactionEncoder;
 import org.web3j.crypto.transaction.type.TxType;
-import org.web3j.crypto.transaction.type.TxTypeValueTransfer;
+import org.web3j.crypto.transaction.type.TxTypeFeeDelegatedValueTransferMemo;
 import org.web3j.crypto.transaction.type.TxType.Type;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.EthChainId;
@@ -27,7 +30,7 @@ import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
 
 public class FeeDelegatedValueTransferMemoExample {
 
-	public static void run() throws IOException {
+	public static void run() throws Exception {
 		Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
 		KlayCredentials credentials = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
 		KlayCredentials credentials_feepayer = KlayCredentials.create(keySample.LEGACY_KEY_FEEPAYER_privkey);
@@ -72,10 +75,11 @@ public class FeeDelegatedValueTransferMemoExample {
 			System.out.println(e);
 		}
 		TransactionReceipt receipt = web3j.klayGetTransactionReceipt(txHash).send().getResult();
-		System.out.println("receipt : \n" + receipt);
+		System.out.println("Receipt from klay_getTransactionReceipt : \n" + receipt);
 		web3j.shutdown();
 
-		TxTypeValueTransfer rawTransaction = TxTypeValueTransfer.decodeFromRawTransaction(hexValue);
+		TxTypeFeeDelegatedValueTransferMemo rawTransaction = TxTypeFeeDelegatedValueTransferMemo
+				.decodeFromRawTransaction(hexValue);
 		System.out.println("TxType : " + rawTransaction.getKlayType());
 
 	}
@@ -88,75 +92,70 @@ public class FeeDelegatedValueTransferMemoExample {
 
 ---
 ```zsh output
-❯ node functionName.js
+❯ java FeeDelegatedValueTransferMemo.java
 output
 ```
 </CH.Code>
 
 
-
-
-
-
 ---
-
 Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
-```java FeeDelegatedValueTransferMemo.java focus=1:19
+```java FeeDelegatedValueTransferMemo.java focus=1:21s
 
 ```
 ---
 
 Connect to the Klaytn blockchain using Web3j and specify the URL
-```java FeeDelegatedValueTransferMemo.java focus=23
+```java FeeDelegatedValueTransferMemo.java focus=26
 
 ```
 ---
 Creating **sender** and **fee payer** credentials using private keys.
 
-```java FeeDelegatedValueTransferMemo.java focus=24:25
+```java FeeDelegatedValueTransferMemo.java focus=27:28
 
 ```
 ---
 Define gas price and gas limit for the transaction
 
-```java FeeDelegatedValueTransferMemo.java focus=27:28
+```java FeeDelegatedValueTransferMemo.java focus=30:31
 
 ```
 ---
 Get the sender's address from `credentials.getAddress()`
 
-```java FeeDelegatedValueTransferMemo.java focus=29
+```java FeeDelegatedValueTransferMemo.java focus=32
 
 ```
 ---
 Get the chain ID from the **Klaytn** network
 
-```java FeeDelegatedValueTransferMemo.java focus=30
+```java FeeDelegatedValueTransferMemo.java focus=33:34
 
 ```
 ---
 Initialize variables for transaction parameters
 
-```java FeeDelegatedValueTransferMemo.java focus=31:40
+```java FeeDelegatedValueTransferMemo.java focus=35:42
 
 ```
 ---
 Create a raw transaction object.
 
-```java FeeDelegatedValueTransferMemo.java focus=41:49
+```java FeeDelegatedValueTransferMemo.java focus=44:52
 
 ```
 ---
 Signing the transaction as **sender** using `KlayTransactionEncoder.signMessage`. 
 
-```java FeeDelegatedValueTransferMemo.java focus=51:52
+```java FeeDelegatedValueTransferMemo.java focus=54:55
 
 ```
 ---
 Signing the transaction as fee payer using `KlayTransactionEncoder.signMessageAsFeePayer`. 
 
-```java FeeDelegatedValueTransferMemo.java focus=54:55
+```java FeeDelegatedValueTransferMemo.java focus=57:58
 
 ```
 
@@ -164,10 +163,9 @@ Signing the transaction as fee payer using `KlayTransactionEncoder.signMessageAs
 Sending the signed transaction to Klaytn network
 <CH.Code>
 
-```java FeeDelegatedValueTransferMemo.java focus=57:59
+```java FeeDelegatedValueTransferMemo.java focus=60:63
 
 ```
-
 
 ---
 
@@ -183,7 +181,7 @@ TxHash :
 Getting the transaction receipt
 <CH.Code>
 
-```java FeeDelegatedValueTransferMemo.java focus=60:67
+```java FeeDelegatedValueTransferMemo.java focus=64:70
 
 ```
 
@@ -231,14 +229,14 @@ class TransactionReceipt {
 ---
 Shutting down the Web3j instance
 
-```java FeeDelegatedValueTransferMemo.java focus=68
+```java FeeDelegatedValueTransferMemo.java focus=71
 
 ```
 ---
 Decoding the raw transaction to get the transaction type
 <CH.Code>
 
-```java FeeDelegatedValueTransferMemo.java focus=70:71
+```java FeeDelegatedValueTransferMemo.java focus=73:75
 
 ```
 
