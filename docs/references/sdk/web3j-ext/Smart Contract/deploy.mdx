@@ -138,86 +138,86 @@ TxType : SMART_CONTRACT_DEPLOY
 
 ---
 Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
-```java smartContractDeploy.java focus=1:17
+```java smartContractDeploy.java focus=1:20
 
 ```
 ---
 Connect to the Klaytn blockchain using Web3j and specify the URL
 
-```java smartContractDeploy.java focus=28
+```java smartContractDeploy.java focus=31
 
 ```
 ---
 Create KlayCredentials using the private key
-```java smartContractDeploy.java focus=29
+```java smartContractDeploy.java focus=32
 
 ```
 ---
 Define gas price and gas limit for the transaction
 
-```java smartContractDeploy.java focus=31:32
+```java smartContractDeploy.java focus=34:35
 
 ```
 ---
 Get the sender's address and nonce
 
-```java smartContractDeploy.java focus=33:35
+```java smartContractDeploy.java focus=36:38
 
 ```
 ---
-Define contract bytecode
+Define **contract bytecode**, you can get it from compiled solidity code
 
-```java smartContractDeploy.java focus=36
+```java smartContractDeploy.java focus=39
 
 ```
 ---
 Get the chain ID from the **Klaytn** network
-```java smartContractDeploy.java focus=37:38
+```java smartContractDeploy.java focus=40:41
 
 ```
 ---
 Initialize variables for transaction parameters
 
-```java smartContractDeploy.java focus=39:44
+```java smartContractDeploy.java focus=42:47
 
 ```
 
 ---
 Create a raw transaction
 
-```java smartContractDeploy.java focus=46:55
+```java smartContractDeploy.java focus=49:58
 
 ```
 ---
 Sign the raw transaction using `KlayRawTransaction.createTransaction`
 
-```java smartContractDeploy.java focus=57:58
+```java smartContractDeploy.java focus=60
 
 ```
 ---
 Send the transaction to Klaytn network
 
-```java smartContractDeploy.java focus=59:60
+```java smartContractDeploy.java focus=61:64
 
 ```
 ---
 Get the transaction receipt 
 
-```java smartContractDeploy.java focus=61:68
+```java smartContractDeploy.java focus=66:75
 
 ```
 ---
 Shut down the Web3j connection
 
-```java smartContractDeploy.java focus=69
+```java smartContractDeploy.java focus=76
 
 ```
+
 ---
 Decode the raw transaction to get the transaction type
 
-```java smartContractDeploy.java focus=71:73
+```java smartContractDeploy.java focus=78:81
 
 ```
-
 
 </CH.Spotlight>

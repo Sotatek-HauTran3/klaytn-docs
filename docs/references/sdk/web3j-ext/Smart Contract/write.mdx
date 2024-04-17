@@ -54,55 +54,54 @@ number after : 298
 
 ---
 Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
-```java WriteContractExample.java focus=3:8
+```java WriteContractExample.java focus=1:10
 
 ```
 ---
 Connect to the Klaytn blockchain using Web3j and specify the URL
-```java WriteContractExample.java focus=17
-
-```
----
-Create KlayCredentials using the private key
-```java WriteContractExample.java focus=18
-
-```
----
-Define smart contract address to interact with
 ```java WriteContractExample.java focus=19
 
 ```
 ---
+Create KlayCredentials using the private key
+```java WriteContractExample.java focus=20
+
+```
+---
+Define smart contract address to interact with
+```java WriteContractExample.java focus=21
+
+```
+---
 Define gas price and gas limit for contract transactions
-```java WriteContractExample.java focus=20:21
+```java WriteContractExample.java focus=22:23
 
 ```
 ---
 Create a gas provider with static gas price and gas limit
-```java WriteContractExample.java focus=22
+```java WriteContractExample.java focus=24
 
 ```
 ---
-Load the contract using **contact address**, **Web3j instance**, **credentials**, and **gas provider**
-```java WriteContractExample.java focus=23
+Load the contract using **contact address**, **Web3j instance**, **credentials**, and **gas provider**. You can read and write the contract through this instance.
+```java WriteContractExample.java focus=25
 
 ```
 ---
 Get the current **number** stored in the contract before writing
-```java WriteContractExample.java focus=25:26
+```java WriteContractExample.java focus=27:28
 
 ```
 ---
 Increment the **number** stored in the contract by calling `counter.increment().send()`
-```java WriteContractExample.java focus=28:29
+```java WriteContractExample.java focus=30:31
 
 ```
 ---
 Get the updated **number** stored in the contract after writing
-```java WriteContractExample.java focus=31:32
+```java WriteContractExample.java focus=33:34
 
 ```
-
 
 </CH.Spotlight>
 
