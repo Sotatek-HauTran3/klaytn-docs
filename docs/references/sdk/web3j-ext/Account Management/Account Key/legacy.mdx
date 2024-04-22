@@ -30,8 +30,9 @@ import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
 
 public class AccountUpdateWithLegacyExample {
 
-        public static void run(KlayCredentials credentials) throws Exception {
+        public static void run() throws Exception {
 
+                KlayCredentials credentials = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
                 Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
 
                 BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
@@ -85,13 +86,13 @@ public class AccountUpdateWithLegacyExample {
 ```zsh output
 ❯ java AccountUpdateWithLegacyExample.java
 TxHash : 
- 0x485a60536a48a64d7e8a559fe9f61d3a59fbb52218b8c808f78c534c40d33778
+ 0x7b435e127119d8ee2edf8d49377ed150e4579cc3c991e0272a519a5d7f3f17b2
 Receipt from eth_getTransactionReceipt : 
-TransactionReceipt{transactionHash='0x485a60536a48a64d7e8a559fe9f61d3a59fbb52218b8c808f78c534c40d33778', transactionIndex='0x0', blockHash='0x9427bf06c06906e4c2fc4f427946101f08440394e8a9568ad4257f19b82f5784', blockNumber='0x908f91d', cumulativeGasUsed='0x5208', gasUsed='0x5208', contractAddress='null', root='null', status='0x1', from='0xa2a8854b1802d8cd5de631e690817c253d6a9153', to='0xa2a8854b1802d8cd5de631e690817c253d6a9153', logs=[], logsBloom='0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000', revertReason='null', type='0x0', effectiveGasPrice='0x5d21dba00'}
+TransactionReceipt{transactionHash='0x7b435e127119d8ee2edf8d49377ed150e4579cc3c991e0272a519a5d7f3f17b2', transactionIndex='0x1', blockHash='0xc1d491e001410664e0a1e68c20d69890a587dede6beae43c20fa1899935425ba', blockNumber='0x90e59b5', cumulativeGasUsed='0x3240d', gasUsed='0x5208', contractAddress='null', root='null', status='0x1', from='0xa2a8854b1802d8cd5de631e690817c253d6a9153', to='0xa2a8854b1802d8cd5de631e690817c253d6a9153', logs=[], logsBloom='0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000', revertReason='null', type='0x0', effectiveGasPrice='0x5d21dba00'}
 Receipt from klay_getTransactionReceipt : 
 class TransactionReceipt {
-    blockHash: 0x9427bf06c06906e4c2fc4f427946101f08440394e8a9568ad4257f19b82f5784
-    blockNumber: 0x908f91d
+    blockHash: 0xc1d491e001410664e0a1e68c20d69890a587dede6beae43c20fa1899935425ba
+    blockNumber: 0x90e59b5
     codeFormat: null
     contractAddress: null
     feePayer: null
@@ -107,14 +108,14 @@ class TransactionReceipt {
     input: null
     logs: []
     logsBloom: 0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-    nonce: 0x3e2
-    senderTxHash: 0x485a60536a48a64d7e8a559fe9f61d3a59fbb52218b8c808f78c534c40d33778
+    nonce: 0x3e8
+    senderTxHash: 0x7b435e127119d8ee2edf8d49377ed150e4579cc3c991e0272a519a5d7f3f17b2
     signature: []
     status: 0x1
     txError: null
     to: null
-    transactionHash: 0x485a60536a48a64d7e8a559fe9f61d3a59fbb52218b8c808f78c534c40d33778
-    transactionIndex: 0x0
+    transactionHash: 0x7b435e127119d8ee2edf8d49377ed150e4579cc3c991e0272a519a5d7f3f17b2
+    transactionIndex: 0x1
     type: TxTypeAccountUpdate
     typeInt: 32
     value: null
@@ -132,18 +133,23 @@ Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
 ```
 ---
+Create a **credentials** from private key
+```java AccountUpdateWithLegacyExample.java focus=27
+
+```
+---
 
 Create a Web3j instance with the specified BAOBAB_URL
 
 
-```java AccountUpdateWithLegacyExample.java focus=27
+```java AccountUpdateWithLegacyExample.java focus=28
 
 ```
 ---
 
 Also, you can change the default provider. For example, using the alchemy provider.
 
-```java AccountUpdateWithLegacyExample.java focus=27
+```java AccountUpdateWithLegacyExample.java focus=28
 package org.web3j.example.accountKey;
 
 import org.web3j.tx.response.PollingTransactionReceiptProcessor;
@@ -168,8 +174,9 @@ import org.web3j.protocol.klaytn.core.method.response.TransactionReceipt;
 
 public class AccountUpdateWithLegacyExample {
 
-        public static void run(KlayCredentials credentials) throws Exception {
+        public static void run() throws Exception {
 
+                KlayCredentials credentials = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
                 Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
 
                 BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
@@ -222,76 +229,68 @@ public class AccountUpdateWithLegacyExample {
 ---
 Gas price and gas limit settings
 
-
-
-```java AccountUpdateWithLegacyExample.java focus=29:30
+```java AccountUpdateWithLegacyExample.java focus=30:31
 
 ```
 ---
-
 Get chain ID from the network
 
-
-```java AccountUpdateWithLegacyExample.java focus=32:33
+```java AccountUpdateWithLegacyExample.java focus=33:34
 
 ```
 ---
-
 Get the nonce for the sender's address
 
-
-```java AccountUpdateWithLegacyExample.java focus=34:35
+```java AccountUpdateWithLegacyExample.java focus=35:36
 
 ```
 ---
 Generate a new account key for account update
 
-```java AccountUpdateWithLegacyExample.java focus=37
+```java AccountUpdateWithLegacyExample.java focus=38
 
 ```
 ---
 Set transaction type as **ACCOUNT_UPDATE**
-```java AccountUpdateWithLegacyExample.java focus=39
+```java AccountUpdateWithLegacyExample.java focus=40
 
 ```
 ---
-
-
 Create a raw transaction for account update
 
-```java AccountUpdateWithLegacyExample.java focus=41:47
+```java AccountUpdateWithLegacyExample.java focus=42:48
 
 ```
 ---
 Sign the transaction
 
-```java AccountUpdateWithLegacyExample.java focus=49
+```java AccountUpdateWithLegacyExample.java focus=50
 
 ```
 ---
 Send the signed transaction to Klaytn network
 
-```java AccountUpdateWithLegacyExample.java focus=50:53
+```java AccountUpdateWithLegacyExample.java focus=51:54
 
 ```
 
 ---
 Wait for the transaction to be completed and get the transaction receipt
 
-```java AccountUpdateWithLegacyExample.java focus=55:64
+```java AccountUpdateWithLegacyExample.java focus=56:65
 
 ```
 ---
 Shut down the Web3j instance
 
 
-```java AccountUpdateWithLegacyExample.java focus=65
+```java AccountUpdateWithLegacyExample.java focus=66
 
 ```
 ---
 Decode the raw transaction to get the transaction type
 
-```java AccountUpdateWithLegacyExample.java focus=67:69
+```java AccountUpdateWithLegacyExample.java focus=68:70
 
 ```
 
