@@ -155,7 +155,7 @@ Declare a transaction which has type **AccountKeyType.Public** and **key** field
 
 ```
 ---
-Send the tx to the blockchain. Other fields that are not declared are filled automatically in **sendTransaction** function. It will return the tx hash, which will be used to wait the receipt
+Send the tx to the blockchain. Function `sendTransaction` internally signs with the private key of the account and then transmits it to the blockchain network.
 
 <CH.Code>
 ```js AccountUpdateWithPubKey.js focus=27:28

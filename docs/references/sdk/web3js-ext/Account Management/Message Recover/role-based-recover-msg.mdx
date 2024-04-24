@@ -5,203 +5,166 @@
 <CH.Spotlight>
 <CH.Code>
 
-```java SignMsgWithRoleBasedExample.java
-package org.web3j.example.accountKey;
+```js SignMsgWithRoleBased.js
+const { Web3 } = require("@klaytn/web3js-ext");
 
-import org.web3j.tx.response.PollingTransactionReceiptProcessor;
-import org.web3j.tx.response.TransactionReceiptProcessor;
-import org.web3j.example.keySample;
-import java.io.IOException;
-import org.web3j.crypto.KlayCredentials;
-import org.web3j.crypto.KlaySignatureData;
-import org.web3j.crypto.Sign.SignatureData;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.protocol.klaytn.Web3j;
-import org.web3j.protocol.klaytn.core.method.response.KlayRecoverFromMessageResponse;
+const senderAddr = "0x334b4d3c775c45c59de54e9f0408cba25a1aece7";
+const senderRoleTransactionPriv = "0xc9668ccd35fc20587aa37a48838b48ccc13cf14dd74c8999dd6a480212d5f7ac";
+const senderRoleAccountUpdatePriv = "0x9ba8cb8f60044058a9e6f815c5c42d3a216f47044c61a1750b6d29ddc7f34bda";
+const senderRoleFeePayerPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
 
-/**
- * 
- */
-public class SignMsgWithRoleBasedExample implements keySample {
-        /**
-         * 
-         */
+const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+const web3 = new Web3(provider);
+const txAccount = web3.eth.accounts.privateKeyToAccount(senderRoleTransactionPriv);
 
-        public static void run() throws Exception {
-                Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
-                KlayCredentials credentials1 = KlayCredentials.create(keySample.ROLEBASED_KEY_transactionkey,
-                                keySample.ROLEBASED_KEY_address);
-                KlayCredentials credentials2 = KlayCredentials.create(keySample.ROLEBASED_KEY_updatekey,
-                                keySample.ROLEBASED_KEY_address);
-                KlayCredentials credentials3 = KlayCredentials.create(keySample.ROLEBASED_KEY_feepayer,
-                                keySample.ROLEBASED_KEY_address);
-                String from = credentials1.getAddress();
-                String message = "0xdeadbeef";
-                String blockNumber = "latest";
+async function main() {
+  const msg = "hello";
+  const msghex = Web3.utils.utf8ToHex(msg);
+  const signResult = txAccount.sign(msg);
+  console.log({ senderAddr, msg, msghex, sig: signResult.signature });
 
-                SignatureData signature1 = KlaySignatureData.signPrefixedMessage(message, credentials1);
-                String result1 = KlaySignatureData.getSignatureString(signature1);
+  const { v, r, s } = signResult;
+  const addr1 = web3.eth.accounts.recover(msg, v, r, s);
+  console.log("recoveredAddr lib", addr1, addr1.toLowerCase() === txAccount.address.toLowerCase());
 
-                SignatureData signature2 = KlaySignatureData.signPrefixedMessage(message, credentials2);
-                String result2 = KlaySignatureData.getSignatureString(signature2);
-
-                SignatureData signature3 = KlaySignatureData.signPrefixedMessage(message, credentials3);
-                String result3 = KlaySignatureData.getSignatureString(signature3);
-
-                KlayRecoverFromMessageResponse response1 = web3j
-                                .klayRecoverFromMessage(from, message, result1, blockNumber)
-                                .send();
-
-                KlayRecoverFromMessageResponse response2 = web3j
-                                .klayRecoverFromMessage(from, message, result2, blockNumber)
-                                .send();
-
-                KlayRecoverFromMessageResponse response3 = web3j
-                                .klayRecoverFromMessage(from, message, result3, blockNumber)
-                                .send();
-                System.out.println("Original address : " + from);
-                System.out.println("Result address for transaction key : " + response1.getResult());
-                System.out.println("Result address for update key : " + response2.getResult());
-                System.out.println("Result address for feepayer key : " + response3.getResult());
-
-                web3j.shutdown();
-
-        }
-
+  const sig = signResult.signature;
+  const addr2 = await web3.klay.recoverFromMessage(senderAddr, msghex, sig, "latest");
+  console.log("recoveredAddr rpc", addr2, addr2.toLowerCase() === txAccount.address.toLowerCase());
 }
+
+main().catch(console.error);
 ```
 ---
 
 ```zsh output
-❯ java SignMsgWithRoleBasedExample.java
-Original address : 0x5bd2fb3c21564c023a4a735935a2b7a238c4ccea
-Result address for transaction key : 0xe15cd70a41dfb05e7214004d7d054801b2a2f06b
-Result address for update key : 0x5bd2fb3c21564c023a4a735935a2b7a238c4ccea
-Result address for feepayer key : 0xa2a8854b1802d8cd5de631e690817c253d6a9153
+❯ js SignMsgWithRoleBased.js
+{
+  senderAddr: '0x5bd2fb3c21564c023a4a735935a2b7a238c4ccea',
+  msg: 'hello',
+  msghex: '0x68656c6c6f',
+  sig: '0x736460622fcfab0fa7de0ca1cde05178f01b124294a640b5f5820c7271262c6c271f1ad15f0d7b974d68eaac60d5daa1e7dd65301bbfb814beecbca1238b64121c'
+}
+recoveredAddr lib 0x5bD2fb3c21564C023A4A735935a2B7A238C4cCEA true
+recoveredAddr rpc 0x5bd2fb3c21564c023a4a735935a2b7a238c4ccea true
 ```
 
 
 </CH.Code>
 ---
-Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
 
+Import the **@klaytn/web3js-ext** packages to add klaytn features on web3
 
-```java SignMsgWithRoleBasedExample.java focus=1:12
+```js SignMsgWithRoleBased.js focus=1
+
+```
+---
+Define sender's **address**, **private key** and others **role-based** private key
+
+```js SignMsgWithRoleBased.js focus=3:6
+
+```
+---
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in web3js is a read-only abstraction to access the blockchain data.
+
+```js SignMsgWithRoleBased.js focus=8
 
 ```
 ---
 
-Create a Web3j instance with the specified BAOBAB_URL
+Also, you can change the provider URL from **baobab** to **allthatnode**
 
+```js SignMsgWithRoleBased.js focus=8
+const { Web3 } = require("@klaytn/web3js-ext");
 
-```java SignMsgWithRoleBasedExample.java focus=23
+const senderAddr = "0x334b4d3c775c45c59de54e9f0408cba25a1aece7";
+const senderRoleTransactionPriv = "0xc9668ccd35fc20587aa37a48838b48ccc13cf14dd74c8999dd6a480212d5f7ac";
+const senderRoleAccountUpdatePriv = "0x9ba8cb8f60044058a9e6f815c5c42d3a216f47044c61a1750b6d29ddc7f34bda";
+const senderRoleFeePayerPriv = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+
+const provider = new Web3.providers.HttpProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
+const web3 = new Web3(provider);
+const txAccount = web3.eth.accounts.privateKeyToAccount(senderRoleTransactionPriv);
+
+async function main() {
+  const msg = "hello";
+  const msghex = Web3.utils.utf8ToHex(msg);
+  const signResult = txAccount.sign(msg);
+  console.log({ senderAddr, msg, msghex, sig: signResult.signature });
+
+  const { v, r, s } = signResult;
+  const addr1 = web3.eth.accounts.recover(msg, v, r, s);
+  console.log("recoveredAddr lib", addr1, addr1.toLowerCase() === txAccount.address.toLowerCase());
+
+  const sig = signResult.signature;
+  const addr2 = await web3.klay.recoverFromMessage(senderAddr, msghex, sig, "latest");
+  console.log("recoveredAddr rpc", addr2, addr2.toLowerCase() === txAccount.address.toLowerCase());
+}
+
+main().catch(console.error)
+```
+---
+Define a **web3 instance** using the provider
+```js SignMsgWithRoleBased.js focus=9
+
+```
+---
+Create a sender's wallet with the **transaction role** private key and **provider**
+
+```js SignMsgWithRoleBased.js focus=10
+
+```
+---
+Define a message to be signed and recovered
+```js SignMsgWithRoleBased.js focus=13
+
+```
+
+---
+Sign the message with sender's **wallet**
+<CH.Code>
+```js SignMsgWithRoleBased.js focus=14:16
 
 ```
 ---
 
-Also, you can change the default provider. For example, using the alchemy provider.
-
-```java SignMsgWithRoleBasedExample.java focus=23
-package org.web3j.example.accountKey;
-
-import org.web3j.tx.response.PollingTransactionReceiptProcessor;
-import org.web3j.tx.response.TransactionReceiptProcessor;
-import org.web3j.example.keySample;
-import java.io.IOException;
-import org.web3j.crypto.KlayCredentials;
-import org.web3j.crypto.KlaySignatureData;
-import org.web3j.crypto.Sign.SignatureData;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.protocol.klaytn.Web3j;
-import org.web3j.protocol.klaytn.core.method.response.KlayRecoverFromMessageResponse;
-
-/**
- * 
- */
-public class SignMsgWithRoleBasedExample implements keySample {
-        /**
-         * 
-         */
-
-        public static void run() throws Exception {
-                Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
-                KlayCredentials credentials1 = KlayCredentials.create(keySample.ROLEBASED_KEY_transactionkey,
-                                keySample.ROLEBASED_KEY_address);
-                KlayCredentials credentials2 = KlayCredentials.create(keySample.ROLEBASED_KEY_updatekey,
-                                keySample.ROLEBASED_KEY_address);
-                KlayCredentials credentials3 = KlayCredentials.create(keySample.ROLEBASED_KEY_feepayer,
-                                keySample.ROLEBASED_KEY_address);
-                String from = credentials1.getAddress();
-                String message = "0xdeadbeef";
-                String blockNumber = "latest";
-
-                SignatureData signature1 = KlaySignatureData.signPrefixedMessage(message, credentials1);
-                String result1 = KlaySignatureData.getSignatureString(signature1);
-
-                SignatureData signature2 = KlaySignatureData.signPrefixedMessage(message, credentials2);
-                String result2 = KlaySignatureData.getSignatureString(signature2);
-
-                SignatureData signature3 = KlaySignatureData.signPrefixedMessage(message, credentials3);
-                String result3 = KlaySignatureData.getSignatureString(signature3);
-
-                KlayRecoverFromMessageResponse response1 = web3j
-                                .klayRecoverFromMessage(from, message, result1, blockNumber)
-                                .send();
-
-                KlayRecoverFromMessageResponse response2 = web3j
-                                .klayRecoverFromMessage(from, message, result2, blockNumber)
-                                .send();
-
-                KlayRecoverFromMessageResponse response3 = web3j
-                                .klayRecoverFromMessage(from, message, result3, blockNumber)
-                                .send();
-                System.out.println("Original address : " + from);
-                System.out.println("Result address for transaction key : " + response1.getResult());
-                System.out.println("Result address for update key : " + response2.getResult());
-                System.out.println("Result address for feepayer key : " + response3.getResult());
-
-                web3j.shutdown();
-
-        }
-
+```zsh output
+❯ js SignMsgWithRoleBased.js
+{
+  senderAddr: '0x5bd2fb3c21564c023a4a735935a2b7a238c4ccea',
+  msg: 'hello',
+  msghex: '0x68656c6c6f',
+  sig: '0x736460622fcfab0fa7de0ca1cde05178f01b124294a640b5f5820c7271262c6c271f1ad15f0d7b974d68eaac60d5daa1e7dd65301bbfb814beecbca1238b64121c'
 }
 ```
 
----
-Load different **role-based credentials** from theirs key pairs
 
-```java SignMsgWithRoleBasedExample.java focus=24:29
+</CH.Code>
+---
+Recover the address from signed message using `web3.eth.accounts.recover`
+<CH.Code>
+```js SignMsgWithRoleBased.js focus=18:20
 
 ```
 ---
-Get the first credential **address**
-```java SignMsgWithRoleBasedExample.java focus=30
+```zsh output
+❯ js SignMsgWithRoleBasedExample.js
+recoveredAddr lib 0x5bD2fb3c21564C023A4A735935a2B7A238C4cCEA true
+```
+
+
+</CH.Code>
+---
+Recover the address from signed message using `web3.klay.recoverFromMessage`
+
+<CH.Code>
+```js SignMsgWithRoleBased.js focus=22:24
 
 ```
 ---
-Define any message to sign
-```java SignMsgWithRoleBasedExample.java focus=31
-
+```zsh output
+❯ js SignMsgWithRoleBasedExample.js
+recoveredAddr rpc 0x5bd2fb3c21564c023a4a735935a2b7a238c4ccea true
 ```
----
-Set the **block number** to be the latest block in the Klaytn network
-```java SignMsgWithRoleBasedExample.java focus=32
 
-```
----
-Sign the **message** with all 3 role-based credentials in order and get the signature outputs as string
-
-```java SignMsgWithRoleBasedExample.java focus=34:41
-
-```
----
-Recover the **addresses** from 3 message responses and compare them to the original **from** address 
-```java SignMsgWithRoleBasedExample.java focus=43:57
-
-```
----
-Shut down the Web3j instance
-```java SignMsgWithRoleBasedExample.java focus=59
-
-```
+</CH.Code>
 </CH.Spotlight>

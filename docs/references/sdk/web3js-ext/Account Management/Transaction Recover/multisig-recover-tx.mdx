@@ -10,271 +10,260 @@ In order for a transaction to be valid for an account associated with **AccountK
 <CH.Spotlight>
 <CH.Code>
 
-```java SignTxWithMultiSigExample.java
-package org.web3j.example.accountKey;
+```js SignTxWithMultiSigExample.js
+const { Web3, TxType, toPeb } = require("@klaytn/web3js-ext");
 
-import org.web3j.tx.response.PollingTransactionReceiptProcessor;
-import org.web3j.tx.response.TransactionReceiptProcessor;
-import org.web3j.example.keySample;
-import java.io.IOException;
-import java.math.BigInteger;
-import org.web3j.crypto.KlayCredentials;
-import org.web3j.crypto.KlayRawTransaction;
-import org.web3j.crypto.KlayTransactionEncoder;
-import org.web3j.crypto.transaction.type.TxType;
-import org.web3j.crypto.transaction.type.TxType.Type;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthChainId;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.protocol.klaytn.Web3j;
-import org.web3j.protocol.klaytn.core.method.response.KlayRecoverFromTransactionResponse;
-import org.web3j.utils.Numeric;
-import org.web3j.protocol.core.methods.response.EthSendTransaction;
+const senderAddr = "0x2bf611d14d330fd3688d10f2201321eacc8aa2ce";
+const senderPriv1 = "0x31fadf868e68fd2e3f7a1c528023c9a86a45db850e9d6b82c1a82d4c75b469d1";
+const senderPriv2 = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const senderPriv3 = "0xc9668ccd35fc20587aa37a48838b48ccc13cf14dd74c8999dd6a480212d5f7ac";
+const receiverAddr = "0x2bf611d14d330fd3688d10f2201321eacc8aa2ce";
 
-/**
- * 
- */
-public class SignTxWithMultiSigExample implements keySample {
-        /**
-         * 
-         */
+const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+const web3 = new Web3(provider);
+const senderAccount1 = web3.eth.accounts.privateKeyToAccount(senderPriv1);
+const senderAccount2 = web3.eth.accounts.privateKeyToAccount(senderPriv2);
+const senderAccount3 = web3.eth.accounts.privateKeyToAccount(senderPriv3);
 
-        public static void run() throws Exception {
-                Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
-                KlayCredentials credentials1 = KlayCredentials.create(keySample.MULTI_KEY_privkey1,
-                                keySample.MULTI_KEY_address);
-                KlayCredentials credentials2 = KlayCredentials.create(keySample.MULTI_KEY_privkey2,
-                                keySample.MULTI_KEY_address);
-                KlayCredentials credentials3 = KlayCredentials.create(keySample.MULTI_KEY_privkey3,
-                                keySample.MULTI_KEY_address);
+async function main() {
+  let tx = {
+    type: TxType.ValueTransfer,
+    from: senderAddr,
+    to: receiverAddr,
+    value: toPeb("0.01", "KLAY"),
+    gasLimit: 100000,
+  };
 
-                BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
-                BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
-                String from = credentials1.getAddress();
-                EthChainId EthchainId = web3j.ethChainId().send();
-                long chainId = EthchainId.getChainId().longValue();
-                String to = "0x000000000000000000000000000000000000dead";
-                BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
-                                .getTransactionCount();
-                BigInteger value = BigInteger.valueOf(100);
+  // The example senderAddr actually requires only 2 signature,
+  // but we use 3 signatures to show different ways to sign a transaction.
 
-                TxType.Type type = Type.VALUE_TRANSFER;
+  // sign 1: First signer sign from the tx object
+  const signResult1 = await senderAccount1.signTransaction(tx);
+  console.log("rawTx1", signResult1.rawTransaction);
 
-                KlayRawTransaction raw = KlayRawTransaction.createTransaction(
-                                type,
-                                nonce,
-                                GAS_PRICE,
-                                GAS_LIMIT,
-                                to,
-                                value,
-                                from);
+  // sign 2: Rest of the signers sign from the rawTx
+  const signResult2 = await senderAccount2.signTransaction(signResult1.rawTransaction);
+  console.log("rawTx2", signResult2.rawTransaction);
 
-                byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials1);
-                signedMessage = KlayTransactionEncoder.signMessage(signedMessage, chainId, credentials2);
-                signedMessage = KlayTransactionEncoder.signMessage(signedMessage, chainId, credentials3);
+  // sign 3: Last signer sign from the rawTx then send it
+  const signResult3 = await senderAccount3.signTransaction(signResult2.rawTransaction);
+  console.log("signedTx3", signResult3.transactionHash);
 
-                String hexValue = Numeric.toHexString(signedMessage);
-                EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
-                System.out.println("TxHash : \n " + transactionResponse.getResult());
+  const receipt = await web3.eth.sendSignedTransaction(signResult3.rawTransaction);
+  console.log("receipt", receipt);
 
-                String blockNumber = "latest";
-                KlayRecoverFromTransactionResponse response = web3j.klayRecoverFromTransaction(hexValue, blockNumber)
-                                .send();
-                System.out.println("Original address : " + from);
-                System.out.println("Result address : " + response.getResult());
-
-                web3j.shutdown();
-
-        }
-
+  const sig = signResult3.signature;
+  const addr2 = await web3.klay.recoverFromTransaction(senderAddr, sig, "latest");
+  console.log("recoveredAddr rpc", addr2, addr2.toLowerCase() === senderAddr);
 }
+
+main().catch(console.error);
 ```
 ---
 ```zsh output
-❯ java SignTxWithMultiSigExample.java
-TxHash : 
- 0x957734684be8f79a21cef4de1842709b84c92e3920d656165ddb951981987b5a
-Original address : 0x82c6a8d94993d49cfd0c1d30f0f8caa65782cc7e
-Result address : 0x82c6a8d94993d49cfd0c1d30f0f8caa65782cc7e
+❯ js SignTxWithMultiSigExample.js
+rawTx1 0x08f88676850ba43b7400830186a094c40b6909eb7085590e1c26cb3becc25368e249e9872386f26fc100009482c6a8d94993d49cfd0c1d30f0f8caa65782cc7ef847f8458207f6a008b987d8905dae51b856c478e6f7b49f01f5f2432a90c03d332e61d518100087a07bea2578790b7dabe9f2fe920d1f3183f48dc26d4ce752bf27964433317504e8
+rawTx2 0x08f8cd76850ba43b7400830186a094c40b6909eb7085590e1c26cb3becc25368e249e9872386f26fc100009482c6a8d94993d49cfd0c1d30f0f8caa65782cc7ef88ef8458207f6a008b987d8905dae51b856c478e6f7b49f01f5f2432a90c03d332e61d518100087a07bea2578790b7dabe9f2fe920d1f3183f48dc26d4ce752bf27964433317504e8f8458207f6a052dcb9cfd9edf75ea60aa7eafce1a984209722c81a6c17f4f26d4b79adcc2f03a03ef04d7793009b90f7af7831f834ad2892678f0f10f8d6e02d6d76b3e4671a1d
+sentTx3 0x1b3b4b8a177ead1602c5052d8c1145a2e9ffc53ac4ce208f4730177486726c6a
+receipt {
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  from: '0x82C6a8D94993d49cfd0c1D30F0F8Caa65782cc7E',
+  contractAddress: null,
+  transactionIndex: 2,
+  gasUsed: BigNumber { _hex: '0xc738', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x6f5fca2355230874808c4fe1b8459c6d61cf7ba22b864aeba4c3cf61d7a49b99',
+  transactionHash: '0x1b3b4b8a177ead1602c5052d8c1145a2e9ffc53ac4ce208f4730177486726c6a',
+  logs: [],
+  blockNumber: 152258186,
+  confirmations: 6,
+  cumulativeGasUsed: BigNumber { _hex: '0x05f70f', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
+recoveredAddr rpc 0x82c6a8d94993d49cfd0c1d30f0f8caa65782cc7e true
 ```
 
 
 </CH.Code>
 
+
 ---
-Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
+Import the **@klaytn/web3js-ext** packages to add klaytn features on web3
 
+```js SignTxWithMultiSigExample.js focus=1
 
-```java SignTxWithMultiSigExample.java focus=1:19
+```
+---
+Define sender's **address**, **private key** and others **weighted multi-sig** private keys
+
+```js SignTxWithMultiSigExample.js focus=3:6
+
+```
+---
+Define receiver's **address**
+
+```js SignTxWithMultiSigExample.js focus=7
+
+```
+---
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in web3js is a read-only abstraction to access the blockchain data.
+
+```js SignTxWithMultiSigExample.js focus=9
+
+```
+---
+Also, you can change the provider URL from **baobab** to **allthatnode**
+
+```js SignTxWithMultiSigExample.js focus=9
+const { Web3, TxType, toPeb } = require("@klaytn/web3js-ext");
+
+const senderAddr = "0x2bf611d14d330fd3688d10f2201321eacc8aa2ce";
+const senderPriv1 = "0x31fadf868e68fd2e3f7a1c528023c9a86a45db850e9d6b82c1a82d4c75b469d1";
+const senderPriv2 = "0x0e4ca6d38096ad99324de0dde108587e5d7c600165ae4cd6c2462c597458c2b8";
+const senderPriv3 = "0xc9668ccd35fc20587aa37a48838b48ccc13cf14dd74c8999dd6a480212d5f7ac";
+const receiverAddr = "0x2bf611d14d330fd3688d10f2201321eacc8aa2ce";
+
+const provider = new Web3.providers.HttpProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
+const web3 = new Web3(provider);
+const senderAccount1 = web3.eth.accounts.privateKeyToAccount(senderPriv1);
+const senderAccount2 = web3.eth.accounts.privateKeyToAccount(senderPriv2);
+const senderAccount3 = web3.eth.accounts.privateKeyToAccount(senderPriv3);
+
+async function main() {
+  let tx = {
+    type: TxType.ValueTransfer,
+    from: senderAddr,
+    to: receiverAddr,
+    value: toPeb("0.01", "KLAY"),
+    gasLimit: 100000,
+  };
+
+  // The example senderAddr actually requires only 2 signature,
+  // but we use 3 signatures to show different ways to sign a transaction.
+
+  // sign 1: First signer sign from the tx object
+  const signResult1 = await senderAccount1.signTransaction(tx);
+  console.log("rawTx1", signResult1.rawTransaction);
+
+  // sign 2: Rest of the signers sign from the rawTx
+  const signResult2 = await senderAccount2.signTransaction(signResult1.rawTransaction);
+  console.log("rawTx2", signResult2.rawTransaction);
+
+  // sign 3: Last signer sign from the rawTx then send it
+  const signResult3 = await senderAccount3.signTransaction(signResult2.rawTransaction);
+  console.log("signedTx3", signResult3.transactionHash);
+
+  const receipt = await web3.eth.sendSignedTransaction(signResult3.rawTransaction);
+  console.log("receipt", receipt);
+
+  const sig = signResult3.signature;
+  const addr2 = await web3.klay.recoverFromTransaction(senderAddr, sig, "latest");
+  console.log("recoveredAddr rpc", addr2, addr2.toLowerCase() === senderAddr);
+}
+
+main().catch(console.error);
+```
+---
+Define a **web3 instance** using the provider
+```js SignTxWithMultiSigExample.js focus=10
+
+```
+---
+Create 3 different wallets with the **weighted multi-sig** private keys and provider
+
+```js SignTxWithMultiSigExample.js focus=11:13
+
+```
+---
+Create a value transfer transaction with `type: TxType.ValueTransfer`
+
+```js SignTxWithMultiSigExample.js focus=16:22
+
+```
+
+---
+Sign the transaction with **first** wallet
+<CH.Code>
+```js SignTxWithMultiSigExample.js focus=27:29
 
 ```
 ---
 
-Create a Web3j instance with the specified BAOBAB_URL
+```zsh output
+rawTx1 0x08f88676850ba43b7400830186a094c40b6909eb7085590e1c26cb3becc25368e249e9872386f26fc100009482c6a8d94993d49cfd0c1d30f0f8caa65782cc7ef847f8458207f6a008b987d8905dae51b856c478e6f7b49f01f5f2432a90c03d332e61d518100087a07bea2578790b7dabe9f2fe920d1f3183f48dc26d4ce752bf27964433317504e8
+```
 
+</CH.Code>
 
-```java SignTxWithMultiSigExample.java focus=30
+---
+Sign the transaction with **second** wallet
+<CH.Code>
+```js SignTxWithMultiSigExample.js focus=31:33
 
 ```
 ---
 
-Also, you can change the default provider. For example, using the alchemy provider.
+```zsh output
+rawTx2 0x08f8cd76850ba43b7400830186a094c40b6909eb7085590e1c26cb3becc25368e249e9872386f26fc100009482c6a8d94993d49cfd0c1d30f0f8caa65782cc7ef88ef8458207f6a008b987d8905dae51b856c478e6f7b49f01f5f2432a90c03d332e61d518100087a07bea2578790b7dabe9f2fe920d1f3183f48dc26d4ce752bf27964433317504e8f8458207f6a052dcb9cfd9edf75ea60aa7eafce1a984209722c81a6c17f4f26d4b79adcc2f03a03ef04d7793009b90f7af7831f834ad2892678f0f10f8d6e02d6d76b3e4671a1d
+```
 
-```java SignTxWithMultiSigExample.java focus=30
-package org.web3j.example.accountKey;
+</CH.Code>
+---
+Sign the transaction with the **third** wallet
+<CH.Code>
+```js SignTxWithMultiSigExample.js focus=35:37
 
-import org.web3j.tx.response.PollingTransactionReceiptProcessor;
-import org.web3j.tx.response.TransactionReceiptProcessor;
-import org.web3j.example.keySample;
-import java.io.IOException;
-import java.math.BigInteger;
-import org.web3j.crypto.KlayCredentials;
-import org.web3j.crypto.KlayRawTransaction;
-import org.web3j.crypto.KlayTransactionEncoder;
-import org.web3j.crypto.transaction.type.TxType;
-import org.web3j.crypto.transaction.type.TxType.Type;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthChainId;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.protocol.klaytn.Web3j;
-import org.web3j.protocol.klaytn.core.method.response.KlayRecoverFromTransactionResponse;
-import org.web3j.utils.Numeric;
-import org.web3j.protocol.core.methods.response.EthSendTransaction;
+```
+---
 
-/**
- * 
- */
-public class SignTxWithMultiSigExample implements keySample {
-        /**
-         * 
-         */
+```zsh output
+signedTx3 0x1b3b4b8a177ead1602c5052d8c1145a2e9ffc53ac4ce208f4730177486726c6a
+```
+</CH.Code>
+---
+Send the **signed transaction** to Klaytn network and print the **receipt**
+<CH.Code>
+```js SignTxWithMultiSigExample.js focus=39:40
 
-        public static void run() throws Exception {
-                Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
-                KlayCredentials credentials1 = KlayCredentials.create(keySample.MULTI_KEY_privkey1,
-                                keySample.MULTI_KEY_address);
-                KlayCredentials credentials2 = KlayCredentials.create(keySample.MULTI_KEY_privkey2,
-                                keySample.MULTI_KEY_address);
-                KlayCredentials credentials3 = KlayCredentials.create(keySample.MULTI_KEY_privkey3,
-                                keySample.MULTI_KEY_address);
+```
+---
 
-                BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
-                BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
-                String from = credentials1.getAddress();
-                EthChainId EthchainId = web3j.ethChainId().send();
-                long chainId = EthchainId.getChainId().longValue();
-                String to = "0x000000000000000000000000000000000000dead";
-                BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
-                                .getTransactionCount();
-                BigInteger value = BigInteger.valueOf(100);
-
-                TxType.Type type = Type.VALUE_TRANSFER;
-
-                KlayRawTransaction raw = KlayRawTransaction.createTransaction(
-                                type,
-                                nonce,
-                                GAS_PRICE,
-                                GAS_LIMIT,
-                                to,
-                                value,
-                                from);
-
-                byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials1);
-                signedMessage = KlayTransactionEncoder.signMessage(signedMessage, chainId, credentials2);
-                signedMessage = KlayTransactionEncoder.signMessage(signedMessage, chainId, credentials3);
-
-                String hexValue = Numeric.toHexString(signedMessage);
-                EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
-                System.out.println("TxHash : \n " + transactionResponse.getResult());
-
-                String blockNumber = "latest";
-                KlayRecoverFromTransactionResponse response = web3j.klayRecoverFromTransaction(hexValue, blockNumber)
-                                .send();
-                System.out.println("Original address : " + from);
-                System.out.println("Result address : " + response.getResult());
-
-                web3j.shutdown();
-
-        }
-
+```zsh output
+receipt {
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  from: '0x82C6a8D94993d49cfd0c1D30F0F8Caa65782cc7E',
+  contractAddress: null,
+  transactionIndex: 2,
+  gasUsed: BigNumber { _hex: '0xc738', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x6f5fca2355230874808c4fe1b8459c6d61cf7ba22b864aeba4c3cf61d7a49b99',
+  transactionHash: '0x1b3b4b8a177ead1602c5052d8c1145a2e9ffc53ac4ce208f4730177486726c6a',
+  logs: [],
+  blockNumber: 152258186,
+  confirmations: 6,
+  cumulativeGasUsed: BigNumber { _hex: '0x05f70f', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
 }
 ```
+</CH.Code>
 ---
-Create 3 **multi-sig credentials** from theirs key pairs
-```java SignTxWithMultiSigExample.java focus=31:36
+Recover the address from signed transaction using `web3.klay.recoverFromTransaction`
+
+<CH.Code>
+```js SignTxWithMultiSigExample.js focus=42:44
 
 ```
 ---
-**Gas price** and **gas limit** settings
-
-```java SignTxWithMultiSigExample.java focus=38:39
-
-```
----
-Set the **sender** address equal to the loaded credential's address
-
-```java SignTxWithMultiSigExample.java focus=40
-
-```
----
-Get **chain ID** from the network
-
-```java SignTxWithMultiSigExample.java focus=41:42
-
-```
----
-Set the **receiver** address equal to any valid address
-
-```java SignTxWithMultiSigExample.java focus=43
-
-```
----
-Get the nonce for the sender's address
-
-```java SignTxWithMultiSigExample.java focus=44:45
-
-```
----
-Set the **value** to transfer
-
-```java SignTxWithMultiSigExample.java focus=46
-
-```
----
-Set transaction type as **VALUE_TRANSFER**
-```java SignTxWithMultiSigExample.java focus=48
-
-```
----
-Create a raw transaction for value transfer
-
-```java SignTxWithMultiSigExample.java focus=50:57
-
-```
----
-Sign the transaction in order with **3 credentials**
-
-```java SignTxWithMultiSigExample.java focus=59:61
-
-```
----
-Send the **signed transaction** to Klaytn network
-
-```java SignTxWithMultiSigExample.java focus=63:65
-
+```zsh output
+recoveredAddr rpc 0x82c6a8d94993d49cfd0c1d30f0f8caa65782cc7e true
 ```
 
----
-Recover the **sender address** from signed transaction and compare it to the **from** address
-```java SignTxWithMultiSigExample.java focus=67:71
-
-```
----
-Shut down the Web3j instance
-
-
-```java SignTxWithMultiSigExample.java focus=73
-
-```
+</CH.Code>
 
 </CH.Spotlight>

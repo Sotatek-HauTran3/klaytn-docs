@@ -194,7 +194,7 @@ Populate the transaction with sender wallet.
 ```
 ---
 
-Sign the transaction
+Sign the transaction with **senderWallet**
 
 <CH.Code>
 ```js TxTypeFeeDelegatedAccountUpdate.js focus=32:33
@@ -208,8 +208,7 @@ senderTxHashRLP 0x21f88c67850ba43b740082cd1494e15cd70a41dfb05e7214004d7d054801b2
 </CH.Code>
 
 ---
-
-Send the transaction to blockchain.
+Send the transaction to blockchain using fee payer's wallet. Function `sendTransactionAsFeePayer` adds a signature with FeePayer’s private key to the sender’s signature and transmits it to the blockchain network.
 
 <CH.Code>
 ```js TxTypeFeeDelegatedAccountUpdate.js focus=35:37

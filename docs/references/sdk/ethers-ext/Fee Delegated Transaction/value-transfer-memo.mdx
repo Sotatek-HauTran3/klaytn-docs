@@ -200,10 +200,7 @@ senderTxHashRLP 0x11f88d8202fa850ba43b740082cd1494c40b6909eb7085590e1c26cb3becc2
 </CH.Code>
 
 ---
-
-Send the tx to the blockchain as **the fee payer**. Other fields that are not declared are filled automatically in **sendTransactionAsFeePayer** function. It will return the tx hash, which will be used to wait the receipt
-
-
+Send the transaction to blockchain using fee payer's wallet. Function `sendTransactionAsFeePayer` adds a signature with FeePayer’s private key to the sender’s signature and transmits it to the blockchain network.
 <CH.Code>
 
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=29:30
@@ -218,18 +215,14 @@ sentTx 0xac225ead53297c95b747abd84e7224ecbc1b40f459a532fd22a67143aa83b4ae
 ```
 
 </CH.Code>
-
 ---
-
 The **wait** function returns the tx receipt if the tx was sent to the blockchain successfully. 
-
 
 <CH.Code>
 
 ```js TxTypeFeeDelegatedValueTransferMemo.js focus=32:33
 
 ```
-
 ---
 
 ```zsh output

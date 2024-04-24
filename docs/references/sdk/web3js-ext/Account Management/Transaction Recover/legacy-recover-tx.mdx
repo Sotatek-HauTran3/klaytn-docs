@@ -3,252 +3,191 @@
 <CH.Spotlight>
 <CH.Code>
 
-```java SignTxWithLegacyExample.java
-package org.web3j.example.accountKey;
+```js SignTxWithLegacyExample.js
+const { Web3, toPeb } = require("@klaytn/web3js-ext");
 
-import org.web3j.tx.response.PollingTransactionReceiptProcessor;
-import org.web3j.tx.response.TransactionReceiptProcessor;
-import org.web3j.example.keySample;
-import java.io.IOException;
-import java.math.BigInteger;
-import org.web3j.crypto.KlayCredentials;
-import org.web3j.crypto.KlayRawTransaction;
-import org.web3j.crypto.KlayTransactionEncoder;
-import org.web3j.crypto.transaction.type.TxType;
-import org.web3j.crypto.transaction.type.TxType.Type;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthChainId;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.protocol.klaytn.Web3j;
-import org.web3j.protocol.klaytn.core.method.response.KlayRecoverFromTransactionResponse;
-import org.web3j.utils.Numeric;
-import org.web3j.protocol.core.methods.response.EthSendTransaction;
+const senderAddr = "0xb2ba72e1f84b7b8cb15487a2bf20328f2cf40c25";
+const senderPriv = "0xebceaca693ea3740231be94f38af6090d3aded336725d26a09b7d14e8e485e1e";
+const receiverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
 
-/**
- * 
- */
-public class SignTxWithLegacyExample implements keySample {
-    /**
-     * 
-     */
+const provider = new Web3.providers.HttpProvider("https://public-en-baobab.klaytn.net");
+const web3 = new Web3(provider);
+const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
 
-    public static void run() throws Exception {
-        Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
-        KlayCredentials credentials1 = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
+async function main() {
+  let tx = {
+    from: senderAddr,
+    to: receiverAddr,
+    value: toPeb("0.01", "KLAY"),
+  };
 
-        BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
-        BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
-        String from = credentials1.getAddress();
-        EthChainId EthchainId = web3j.ethChainId().send();
-        long chainId = EthchainId.getChainId().longValue();
-        String to = "0x000000000000000000000000000000000000dead";
-        BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
-                .getTransactionCount();
-        BigInteger value = BigInteger.valueOf(100);
+  const signResult = await senderAccount.signTransaction(tx);
+  console.log("signedTx", signResult.transactionHash);
 
-        TxType.Type type = Type.VALUE_TRANSFER;
+  const receipt = await web3.eth.sendSignedTransaction(signResult.rawTransaction);
+  console.log("receipt", receipt);
 
-        KlayRawTransaction raw = KlayRawTransaction.createTransaction(
-                type,
-                nonce,
-                GAS_PRICE,
-                GAS_LIMIT,
-                to,
-                value,
-                from);
-
-        byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials1);
-        String hexValue = Numeric.toHexString(signedMessage);
-        EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
-        System.out.println("TxHash : \n " + transactionResponse.getResult());
-
-        String blockNumber = "latest";
-        KlayRecoverFromTransactionResponse response = web3j.klayRecoverFromTransaction(hexValue, blockNumber).send();
-        System.out.println("Original address : " + from);
-        System.out.println("Result address : " + response.getResult());
-
-        web3j.shutdown();
-
-    }
-
+  const sig = signResult.signature;
+  const addr2 = await web3.klay.recoverFromTransaction(senderAddr, sig, "latest");
+  console.log("recoveredAddr rpc", addr2, addr2.toLowerCase() === senderAddr);
 }
+
+main().catch(console.error);
 ```
 ---
 ```zsh output
-❯ java SignTxWithLegacyExample.java
-TxHash : 
- 0x957734684be8f79a21cef4de1842709b84c92e3920d656165ddb951981987b5a
-Original address : 0xa2a8854b1802d8cd5de631e690817c253d6a9153
-Result address : 0xa2a8854b1802d8cd5de631e690817c253d6a9153
+❯ js SignTxWithLegacyExample.js
+rawTx 0x08f87e05850ba43b740082cd1494c40b6909eb7085590e1c26cb3becc25368e249e98094b2ba72e1f84b7b8cb15487a2bf20328f2cf40c25f847f8458207f5a070d2c5f2dd52d6a3b7bba65594b2c875b8ce0473e16b06b43d5c2ec9ebfcd467a048af2fc51f75961a9cebfb1685b12d99db143bbd42a76f9c50970b807e1010b9
+sentTx 0xecb117338d7a0e7e9444886ebdab5d0e14fd1b02fa476fee839a2fc3b105f391
+receipt {
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  from: '0xb2ba72e1f84b7B8Cb15487A2bf20328F2cF40c25',
+  contractAddress: null,
+  transactionIndex: 1,
+  gasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x7eae10aa2fcd3c42ac1705b63ad025f972a222bb71d65feeb0000d92c2e73732',
+  transactionHash: '0xecb117338d7a0e7e9444886ebdab5d0e14fd1b02fa476fee839a2fc3b105f391',
+  logs: [],
+  blockNumber: 152256170,
+  confirmations: 3,
+  cumulativeGasUsed: BigNumber { _hex: '0x029636', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
+}
+recoveredAddr rpc 0xb2ba72e1f84b7b8cb15487a2bf20328f2cf40c25 true
 ```
 </CH.Code>
 
 ---
-Import necessary classes from the Web3j and Klaytn libraries(`web3j-ext`).
+Import the **@klaytn/web3js-ext** packages to add klaytn features on web3
 
+```js SignTxWithLegacyExample.js focus=1
 
-```java SignTxWithLegacyExample.java focus=1:19
+```
+---
+Define sender's **address** and **private key**
+
+```js SignTxWithLegacyExample.js focus=3:4
+
+```
+---
+Define receiver's **address**
+
+```js SignTxWithLegacyExample.js focus=5
+
+```
+---
+Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in web3js is a read-only abstraction to access the blockchain data.
+
+```js SignTxWithLegacyExample.js focus=7
+
+```
+---
+Also, you can change the provider URL from **baobab** to **allthatnode**
+
+```js SignTxWithLegacyExample.js focus=7
+const { Web3, toPeb } = require("@klaytn/web3js-ext");
+
+const senderAddr = "0xb2ba72e1f84b7b8cb15487a2bf20328f2cf40c25";
+const senderPriv = "0xebceaca693ea3740231be94f38af6090d3aded336725d26a09b7d14e8e485e1e";
+const receiverAddr = "0xc40b6909eb7085590e1c26cb3becc25368e249e9";
+
+const provider = new Web3.providers.HttpProvider("https://klaytn-mainnet-rpc.allthatnode.com:8551");
+const web3 = new Web3(provider);
+const senderAccount = web3.eth.accounts.privateKeyToAccount(senderPriv);
+
+async function main() {
+  let tx = {
+    from: senderAddr,
+    to: receiverAddr,
+    value: toPeb("0.01", "KLAY"),
+  };
+
+  const signResult = await senderAccount.signTransaction(tx);
+  console.log("signedTx", signResult.transactionHash);
+
+  const receipt = await web3.eth.sendSignedTransaction(signResult.rawTransaction);
+  console.log("receipt", receipt);
+
+  const sig = signResult.signature;
+  const addr2 = await web3.klay.recoverFromTransaction(senderAddr, sig, "latest");
+  console.log("recoveredAddr rpc", addr2, addr2.toLowerCase() === senderAddr);
+}
+
+main().catch(console.error);
+```
+---
+Define a **web3 instance** using the provider
+```js SignTxWithLegacyExample.js focus=8
+
+```
+---
+Create a sender's wallet with the private key and provider
+
+```js SignTxWithLegacyExample.js focus=9
+
+```
+---
+Create a value transfer transaction, use `toPeb` helper to convert amount from **KLAY** to **Peb**
+```js SignTxWithLegacyExample.js focus=12:16
+
+```
+---
+Sign the transaction with sender's **wallet**
+<CH.Code>
+```js SignTxWithLegacyExample.js focus=18:19
 
 ```
 ---
 
-Create a Web3j instance with the specified BAOBAB_URL
+```zsh output
+signedTx 0xecb117338d7a0e7e9444886ebdab5d0e14fd1b02fa476fee839a2fc3b105f391
+```
 
-
-```java SignTxWithLegacyExample.java focus=30
+</CH.Code>
+---
+Send the **signed transaction** to Klaytn network
+<CH.Code>
+```js SignTxWithLegacyExample.js focus=21:22
 
 ```
 ---
 
-Also, you can change the default provider. For example, using the alchemy provider.
-
-```java SignTxWithLegacyExample.java focus=30
-package org.web3j.example.accountKey;
-
-import org.web3j.tx.response.PollingTransactionReceiptProcessor;
-import org.web3j.tx.response.TransactionReceiptProcessor;
-import org.web3j.example.keySample;
-import java.io.IOException;
-import java.math.BigInteger;
-import org.web3j.crypto.KlayCredentials;
-import org.web3j.crypto.KlayRawTransaction;
-import org.web3j.crypto.KlayTransactionEncoder;
-import org.web3j.crypto.transaction.type.TxType;
-import org.web3j.crypto.transaction.type.TxType.Type;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthChainId;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.protocol.klaytn.Web3j;
-import org.web3j.protocol.klaytn.core.method.response.KlayRecoverFromTransactionResponse;
-import org.web3j.utils.Numeric;
-import org.web3j.protocol.core.methods.response.EthSendTransaction;
-
-/**
- * 
- */
-public class SignTxWithLegacyExample implements keySample {
-    /**
-     * 
-     */
-
-    public static void run() throws Exception {
-        Web3j web3j = Web3j.build(new HttpService(keySample.BAOBAB_URL));
-        KlayCredentials credentials1 = KlayCredentials.create(keySample.LEGACY_KEY_privkey);
-
-        BigInteger GAS_PRICE = BigInteger.valueOf(50000000000L);
-        BigInteger GAS_LIMIT = BigInteger.valueOf(6721950);
-        String from = credentials1.getAddress();
-        EthChainId EthchainId = web3j.ethChainId().send();
-        long chainId = EthchainId.getChainId().longValue();
-        String to = "0x000000000000000000000000000000000000dead";
-        BigInteger nonce = web3j.ethGetTransactionCount(from, DefaultBlockParameterName.LATEST).send()
-                .getTransactionCount();
-        BigInteger value = BigInteger.valueOf(100);
-
-        TxType.Type type = Type.VALUE_TRANSFER;
-
-        KlayRawTransaction raw = KlayRawTransaction.createTransaction(
-                type,
-                nonce,
-                GAS_PRICE,
-                GAS_LIMIT,
-                to,
-                value,
-                from);
-
-        byte[] signedMessage = KlayTransactionEncoder.signMessage(raw, chainId, credentials1);
-        String hexValue = Numeric.toHexString(signedMessage);
-        EthSendTransaction transactionResponse = web3j.ethSendRawTransaction(hexValue).send();
-        System.out.println("TxHash : \n " + transactionResponse.getResult());
-
-        String blockNumber = "latest";
-        KlayRecoverFromTransactionResponse response = web3j.klayRecoverFromTransaction(hexValue, blockNumber).send();
-        System.out.println("Original address : " + from);
-        System.out.println("Result address : " + response.getResult());
-
-        web3j.shutdown();
-
-    }
-
+```zsh output
+receipt {
+  to: '0xC40B6909EB7085590E1c26Cb3beCC25368e249E9',
+  from: '0xb2ba72e1f84b7B8Cb15487A2bf20328F2cF40c25',
+  contractAddress: null,
+  transactionIndex: 1,
+  gasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x7eae10aa2fcd3c42ac1705b63ad025f972a222bb71d65feeb0000d92c2e73732',
+  transactionHash: '0xecb117338d7a0e7e9444886ebdab5d0e14fd1b02fa476fee839a2fc3b105f391',
+  logs: [],
+  blockNumber: 152256170,
+  confirmations: 3,
+  cumulativeGasUsed: BigNumber { _hex: '0x029636', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05d21dba00', _isBigNumber: true },
+  status: 1,
+  type: 0,
+  byzantium: true
 }
 ```
+</CH.Code>
 ---
-Create a **credential** from private key
-```java SignTxWithLegacyExample.java focus=31
+Recover the address from signed transaction using `web3.klay.recoverFromTransaction`
+
+<CH.Code>
+```js SignTxWithLegacyExample.js focus=24:26
 
 ```
 ---
-Gas price and gas limit settings
-
-```java SignTxWithLegacyExample.java focus=33:34
-
-```
----
-Set the **sender** address equal to the loaded credential's address
-
-```java SignTxWithLegacyExample.java focus=35
-
-```
----
-Get chain ID from the network
-
-
-```java SignTxWithLegacyExample.java focus=36:37
-
-```
----
-Set the **receiver** address equal to any valid address
-
-```java SignTxWithLegacyExample.java focus=38
-
-```
----
-Get the nonce for the sender's address
-
-```java SignTxWithLegacyExample.java focus=39:40
-
-```
----
-Set the value to transfer
-
-```java SignTxWithLegacyExample.java focus=41
-
-```
----
-Set transaction type as **VALUE_TRANSFER**
-```java SignTxWithLegacyExample.java focus=43
-
-```
----
-Create a raw transaction for value transfer
-
-```java SignTxWithLegacyExample.java focus=45:52
-
-```
----
-Sign the transaction
-
-```java SignTxWithLegacyExample.java focus=54
-
-```
----
-Send the signed transaction to Klaytn network
-
-```java SignTxWithLegacyExample.java focus=55:57
-
+```zsh output
+recoveredAddr rpc 0xb2ba72e1f84b7b8cb15487a2bf20328f2cf40c25 true
 ```
 
----
-Recover the sender address from signed transaction and compare it to the **from** address
-```java SignTxWithLegacyExample.java focus=59:62
-
-```
----
-Shut down the Web3j instance
-
-
-```java SignTxWithLegacyExample.java focus=64
-
-```
-
+</CH.Code>
 </CH.Spotlight>
