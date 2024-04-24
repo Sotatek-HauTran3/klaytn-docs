@@ -214,7 +214,7 @@ senderTxHashRLP 0x31f8a6820355850ba43b7400830116379495be48607498109030592c08adc9
 
 </CH.Code>
 ---
-Send the transaction with **fee payer wallet**. Other fields that are not declared are filled automatically in **sendTransaction** function. It will return the tx hash, which will be used to wait the receipt
+Send the transaction to blockchain using fee payer's wallet. Function `sendTransactionAsFeePayer` adds a signature with FeePayer’s private key to the sender’s signature and transmits it to the blockchain network.
 <CH.Code>
 ```js FeeDelegatedSmartContractExecution.js focus=34:36
 
