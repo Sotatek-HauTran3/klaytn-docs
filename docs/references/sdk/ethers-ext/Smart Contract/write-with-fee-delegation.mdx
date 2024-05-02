@@ -123,7 +123,7 @@ Define **sender, fee payer address and sender private key**
 
 ```
 ---
-Setup the provider with the specified Klaytn **Baobab** testnet URL. A provider in ethers is a read-only abstraction to access the blockchain data.
+Set up the provider with the specified Klaytn **Baobab** testnet URL. A provider in ethers is a read-only abstraction to access the blockchain data.
 ```js writeWithFeeDelegation.js focus=9
 
 ```
@@ -220,7 +220,7 @@ Define **contract address** to interact with
 
 ```
 ---
-Create a contract instance with **ethers.Contract**, fill in params **contractAddr**, **abi**, **provider**
+Create a contract instance with **ethers.Contract**, fill in params **contractAddr**, **abi**, **provider**. You can read and write the contract through this instance
 ```js writeWithFeeDelegation.js focus=40
 
 ```
@@ -248,7 +248,7 @@ Create a transaction object with data from previous step
 
 ```
 ---
-Sign the transaction with sender wallet
+Sign the transaction with sender's wallet
 <CH.Code>
 ```js writeWithFeeDelegation.js focus=53:56
 

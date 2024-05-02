@@ -149,7 +149,7 @@ Creating new credentials using **LEGACY_KEY_privkey**
 
 ```
 ---
-Gas price and gas limit settings
+Gas **price** and **gas limit** settings
 
 
 ```java cancelTransactionExample.java focus=35:36
@@ -193,18 +193,72 @@ Sign the raw transaction with pre-defined **credentials**
 ```java cancelTransactionExample.java focus=52
 
 ```
+
 ---
 Send the raw transaction to the blockchain. It will return the transaction hash
+<CH.Code>
 
 ```java cancelTransactionExample.java focus=53:56
 
 ```
+
+
+---
+
+```zsh output
+❯ java cancelTransactionExample.java
+TxHash : 
+ 0x3b739ef7094ff05af24322dc0d0547aecaaea0bad69c89129f159c7f03e38b3d
+```
+
+</CH.Code>
 ---
 Get the **transaction receipt** and using the transaction hash
+<CH.Code>
 
 
 ```java cancelTransactionExample.java focus=58:67
 ```
+
+
+---
+
+```zsh output
+❯ java cancelTransactionExample.java
+receipt : 
+class TransactionReceipt {
+    blockHash: 0x05402b8b900d619380a723f417ec56de8843e92078f7160c13ede20f98cfd8a5
+    blockNumber: 0x8dea897
+    codeFormat: null
+    contractAddress: null
+    feePayer: null
+    feePayerSignatures: []
+    feeRatio: null
+    from: 0xa2a8854b1802d8cd5de631e690817c253d6a9153
+    gas: 0x66919e
+    effectiveGasPrice: 0x5d21dba00
+    gasPrice: 0xba43b7400
+    gasUsed: 0x5208
+    humanReadable: null
+    key: null
+    input: null
+    logs: []
+    logsBloom: 0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    nonce: 0x3bd
+    senderTxHash: 0x3b739ef7094ff05af24322dc0d0547aecaaea0bad69c89129f159c7f03e38b3d
+    signature: []
+    status: 0x1
+    txError: null
+    to: null
+    transactionHash: 0x3b739ef7094ff05af24322dc0d0547aecaaea0bad69c89129f159c7f03e38b3d
+    transactionIndex: 0x1
+    type: TxTypeCancel
+    typeInt: 56
+    value: null
+}
+```
+
+</CH.Code>
 ---
 Shutdown the web3j instance
 
@@ -214,9 +268,20 @@ Shutdown the web3j instance
 ---
 
 Decoding the raw transaction to get the transaction type
+<CH.Code>
 
 ```java cancelTransactionExample.java focus=70:72
 
 ```
 
+
+---
+
+```zsh output
+❯ java cancelTransactionExample.java
+TxType : CANCEL 
+
+```
+
+</CH.Code>
 </CH.Spotlight>

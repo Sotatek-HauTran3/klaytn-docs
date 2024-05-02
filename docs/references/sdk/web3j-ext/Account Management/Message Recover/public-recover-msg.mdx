@@ -147,9 +147,23 @@ Sign the **message** with using `KlaySignatureData.signPrefixedMessage`
 ```
 ---
 Recover the **address** and compare it to the original address 
+<CH.Code>
 ```java SignMsgWithPubkeyExample.java focus=33:36
 
 ```
+
+
+---
+
+```zsh output
+❯ java SignMsgWithPubkeyExample.java
+Original address : 0xe15cd70a41dfb05e7214004d7d054801b2a2f06b
+Result address : 0xa2a8854b1802d8cd5de631e690817c253d6a9153
+```
+
+</CH.Code>
+
+
 ---
 Shut down the Web3j instance
 ```java SignMsgWithPubkeyExample.java focus=38

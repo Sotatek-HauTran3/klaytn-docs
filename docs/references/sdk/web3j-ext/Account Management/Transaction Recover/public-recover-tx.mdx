@@ -196,7 +196,7 @@ Set the **sender** address equal to the loaded credential's address
 
 ```
 ---
-Get chain ID from the network
+Get **chain ID** from the network
 
 ```java SignTxWithPubkeyExample.java focus=37:38
 
@@ -208,7 +208,7 @@ Set the **receiver** address equal to any valid address
 
 ```
 ---
-Get the nonce for the sender's address
+Get the **nonce** for the sender's address
 
 ```java SignTxWithPubkeyExample.java focus=40:41
 
@@ -237,17 +237,44 @@ Sign the transaction
 
 ```
 ---
-Send the signed transaction to Klaytn network
+Send the **signed transaction** to Klaytn network
 
+<CH.Code>
 ```java SignTxWithPubkeyExample.java focus=56:58
 
 ```
 
+
+---
+
+```zsh output
+❯ java SignTxWithPubkeyExample.java
+TxHash : 
+ 0xcb3c9869bdb600e6fdb74fe06a727900f8beb3126b5a8e899e29d5fbba7873f6
+```
+
+</CH.Code>
+
+
 ---
 Recover the sender address from signed transaction and compare it to the **from** address
+<CH.Code>
 ```java SignTxWithPubkeyExample.java focus=60:64
 
 ```
+
+
+---
+
+```zsh output
+❯ java SignTxWithPubkeyExample.java
+Original address : 0xe15cd70a41dfb05e7214004d7d054801b2a2f06b
+Result address : 0xe15cd70a41dfb05e7214004d7d054801b2a2f06b
+```
+
+</CH.Code>
+
+
 ---
 Shut down the Web3j instance
 

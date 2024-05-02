@@ -229,7 +229,7 @@ Set the **receiver** address equal to any valid address
 
 ```
 ---
-Get the nonce for the sender's address
+Get the **nonce** for the sender's address
 
 ```java SignTxWithMultiSigExample.java focus=44:45
 
@@ -260,15 +260,43 @@ Sign the transaction in order with **3 credentials**
 ---
 Send the **signed transaction** to Klaytn network
 
+<CH.Code>
 ```java SignTxWithMultiSigExample.java focus=63:65
 
 ```
 
+
+---
+
+```zsh output
+❯ java SignTxWithMultiSigExample.java
+TxHash : 
+ 0x957734684be8f79a21cef4de1842709b84c92e3920d656165ddb951981987b5a
+
+```
+
+</CH.Code>
+
+
 ---
 Recover the **sender address** from signed transaction and compare it to the **from** address
+<CH.Code>
 ```java SignTxWithMultiSigExample.java focus=67:71
 
 ```
+
+
+---
+
+```zsh output
+❯ java SignTxWithMultiSigExample.java
+Original address : 0x82c6a8d94993d49cfd0c1d30f0f8caa65782cc7e
+Result address : 0x82c6a8d94993d49cfd0c1d30f0f8caa65782cc7e
+```
+
+</CH.Code>
+
+
 ---
 Shut down the Web3j instance
 

@@ -34,7 +34,7 @@ def web3_account_update_legacy():
         'from' : user.address,
         'key' : {
             'type': KeyType.LEGACY,
-            'key': compressed_key(user)
+            'key': {}
         }
     })
     account_update_tx = fill_transaction(account_update_tx, w3)
@@ -121,7 +121,7 @@ def web3_account_update_legacy():
         'from' : user.address,
         'key' : {
             'type': KeyType.LEGACY,
-            'key': compressed_key(user)
+            'key': {}
         }
     })
     account_update_tx = fill_transaction(account_update_tx, w3)
@@ -160,12 +160,6 @@ Merge **additional fields** like **sender** and **keys** into the empty tx by us
 ---
 In this case, the account key to update is the **legacy** key.
 ```py web3_account_update_legacy.py focus=28
-
-```
-
----
-You can use the **compressed_key** util to set the key. It will extract the compressed public key from the key
-```py web3_account_update_legacy.py focus=29
 
 ```
 
@@ -216,7 +210,7 @@ You can use the **to_pretty** util to print the formatted tx.
 ---
 Sign the account update tx type. You must sign it with the loaded account
 <CH.Code>
-```py web3_account_update_legacy.py focus=22,32:33
+```py web3_account_update_legacy.py focus=22,35:37
 
 ```
 ---
