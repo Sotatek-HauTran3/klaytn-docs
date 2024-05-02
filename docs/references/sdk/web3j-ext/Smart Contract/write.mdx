@@ -89,9 +89,21 @@ Load the contract using **contact address**, **Web3j instance**, **credentials**
 ```
 ---
 Get the current **number** stored in the contract before writing
+<CH.Code>
 ```java WriteContractExample.java focus=27:28
 
 ```
+
+
+---
+
+```zsh output
+❯ java WriteContractExample.java
+number before : 297
+
+```
+
+</CH.Code>
 ---
 Increment the **number** stored in the contract by calling `counter.increment().send()`
 ```java WriteContractExample.java focus=30:31
@@ -99,9 +111,20 @@ Increment the **number** stored in the contract by calling `counter.increment().
 ```
 ---
 Get the updated **number** stored in the contract after writing
+<CH.Code>
 ```java WriteContractExample.java focus=33:34
 
 ```
+
+
+---
+
+```zsh output
+❯ java WriteContractExample.java
+number after : 298
+```
+
+</CH.Code>
 
 </CH.Spotlight>
 

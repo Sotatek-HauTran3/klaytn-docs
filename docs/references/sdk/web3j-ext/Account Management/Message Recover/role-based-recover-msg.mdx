@@ -196,9 +196,24 @@ Sign the **message** with all 3 role-based credentials in order and get the sign
 ```
 ---
 Recover the **addresses** from 3 message responses and compare them to the original **from** address 
+<CH.Code>
 ```java SignMsgWithRoleBasedExample.java focus=43:57
 
 ```
+
+
+---
+
+```zsh output
+❯ java SignMsgWithRoleBasedExample.java
+Original address : 0x5bd2fb3c21564c023a4a735935a2b7a238c4ccea
+Result address for transaction key : 0xe15cd70a41dfb05e7214004d7d054801b2a2f06b
+Result address for update key : 0x5bd2fb3c21564c023a4a735935a2b7a238c4ccea
+Result address for feepayer key : 0xa2a8854b1802d8cd5de631e690817c253d6a9153
+```
+
+</CH.Code>
+
 ---
 Shut down the Web3j instance
 ```java SignMsgWithRoleBasedExample.java focus=59

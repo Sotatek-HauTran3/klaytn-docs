@@ -178,7 +178,7 @@ Create a **credential** from private key
 
 ```
 ---
-Gas price and gas limit settings
+Gas **price** and **gas limit** settings
 
 ```java SignTxWithLegacyExample.java focus=33:34
 
@@ -190,7 +190,7 @@ Set the **sender** address equal to the loaded credential's address
 
 ```
 ---
-Get chain ID from the network
+Get **chain ID** from the network
 
 
 ```java SignTxWithLegacyExample.java focus=36:37
@@ -203,7 +203,7 @@ Set the **receiver** address equal to any valid address
 
 ```
 ---
-Get the nonce for the sender's address
+Get the **nonce** for the sender's address
 
 ```java SignTxWithLegacyExample.java focus=39:40
 
@@ -232,17 +232,44 @@ Sign the transaction
 
 ```
 ---
-Send the signed transaction to Klaytn network
+Send the **signed transaction** to Klaytn network
 
+<CH.Code>
 ```java SignTxWithLegacyExample.java focus=55:57
 
 ```
 
+
+---
+
+```zsh output
+❯ java SignTxWithLegacyExample.java
+TxHash : 
+ 0x957734684be8f79a21cef4de1842709b84c92e3920d656165ddb951981987b5a
+
+```
+
+</CH.Code>
+
+
 ---
 Recover the sender address from signed transaction and compare it to the **from** address
+<CH.Code>
 ```java SignTxWithLegacyExample.java focus=59:62
 
 ```
+
+
+---
+
+```zsh output
+❯ java SignTxWithLegacyExample.java
+Original address : 0xa2a8854b1802d8cd5de631e690817c253d6a9153
+Result address : 0xa2a8854b1802d8cd5de631e690817c253d6a9153
+```
+
+</CH.Code>
+
 ---
 Shut down the Web3j instance
 

@@ -174,9 +174,21 @@ Load the contract using **contact address**, **Web3j instance**, **credentials**
 
 ---
 Get the current **number** stored in the contract before writing
+<CH.Code>
 ```java WriteContractWithFeeDelegationExample.java focus=52:53
 
 ```
+
+
+---
+
+```zsh output
+❯ java WriteContractWithFeeDelegationExample.java
+number before : 298
+
+```
+
+</CH.Code>
 ---
 Set params for calling method `setNumber` to the contract
 ```java WriteContractWithFeeDelegationExample.java focus=55:60
@@ -216,9 +228,21 @@ Delay for a short time to ensure the transaction is completed
 ```
 ---
 Get the updated **number** stored in the contract after writing
+<CH.Code>
 ```java WriteContractWithFeeDelegationExample.java focus=86:87
 
 ```
+
+
+---
+
+```zsh output
+❯ java WriteContractWithFeeDelegationExample.java
+number after : 50
+
+```
+
+</CH.Code>
 ---
 Shutting down the Web3j instance
 ```java WriteContractWithFeeDelegationExample.java focus=89
